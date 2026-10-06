@@ -1,0 +1,13 @@
+{
+  "name": "雀学 Jangaku",
+  "short_name": "雀学",
+  "description": "麻雀を基礎から学べる無料アプリ / Learn riichi mahjong from scratch",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#E6ECE8",
+  "theme_color": "#1D5244",
+  "icons": [
+    {"src": "icon-180.png", "sizes": "180x180", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}

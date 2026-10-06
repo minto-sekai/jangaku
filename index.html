@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>雀学 Jangaku｜麻雀を基礎から</title>
+<meta name="description" content="麻雀を基礎から学べる無料アプリ。毎日5問の何切る、キャラクターと学ぶ道場、点数計算や鳴きの作法まで。Learn riichi mahjong from scratch.">
+<meta name="theme-color" content="#1D5244">
+<meta property="og:type" content="website">
+<meta property="og:title" content="雀学 Jangaku｜麻雀を基礎から">
+<meta property="og:description" content="毎日5問の何切る、キャラクターと学ぶ道場、点数計算まで。無料・登録不要。">
+<meta property="og:url" content="https://jangaku.netlify.app/">
+<meta property="og:image" content="https://jangaku.netlify.app/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon-512.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<!-- アクセス解析(任意): GoatCounterを使う場合は、下の行の「YOURCODE」を自分のコードに変えて、コメントを外す
+<script data-goatcounter="https://YOURCODE.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E6ECE8; --surface:#F6F8F6; --ink:#1B2723; --muted:#5A6A64; --line:#C9D4CF;
+  --felt:#1D5244; --felt-2:#2A6A58; --on-felt:#EEF4EF;
+  --red:#B8352A; --jade:#2B7A4B; --indigo:#27488A; --gold:#B8862B;
+  --tile-face:#FBF9F1; --tile-edge:#E8E3D2; --tile-back:#2E7D5C;
+  --ok-bg:#DDEFE3; --ng-bg:#F6E0DC; --ron-bg:#F3EBDD; --ron-line:#E2D5BC;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#10201B; --surface:#172A24; --ink:#E4ECE7; --muted:#9BB0A8; --line:#2C4239;
+    --felt:#163F34; --felt-2:#1F5446; --on-felt:#E4ECE7;
+    --ok-bg:#1E3B2B; --ng-bg:#43241F; --ron-bg:#332D22; --ron-line:#4A4130;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10201B; --surface:#172A24; --ink:#E4ECE7; --muted:#9BB0A8; --line:#2C4239;
+  --felt:#163F34; --felt-2:#1F5446; --on-felt:#E4ECE7;
+  --ok-bg:#1E3B2B; --ng-bg:#43241F; --ron-bg:#332D22; --ron-line:#4A4130;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:inherit;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',sans-serif;font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%;}
+h1,h2,h3{font-family:'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',serif;line-height:1.3;margin:0;}
+button{font:inherit;color:inherit;cursor:pointer;}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+
+/* 卓 */
+.table{background:radial-gradient(120% 90% at 50% 0%,var(--felt-2),var(--felt));color:var(--on-felt);padding:28px 20px 22px;}
+.table-in{max-width:760px;margin:0 auto;}
+.table h1{font-size:44px;font-weight:800;letter-spacing:.08em;}
+.table p{margin:4px 0 18px;opacity:.85;font-size:15px;}
+#hero-tiles{display:flex;gap:4px;max-width:330px;}
+#hero-tiles .tile{flex:1 1 0;}
+
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);display:flex;justify-content:center;}
+.tabs-in{display:flex;max-width:760px;width:100%;}
+.tabs button{flex:1;background:none;border:0;padding:12px 4px 10px;font-weight:700;font-size:15px;color:var(--muted);border-bottom:3px solid transparent;}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red);}
+
+main{max-width:760px;margin:0 auto;padding:22px 16px 60px;}
+.panel h2{font-size:26px;margin:6px 0 6px;}
+.lead{color:var(--muted);margin:0 0 18px;font-size:15px;}
+.note{color:var(--muted);font-size:14px;margin:2px 0 10px;}
+.block{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 16px;margin-bottom:18px;}
+.block h3{font-size:19px;margin-bottom:6px;}
+
+/* 牌 */
+.tile{display:inline-block;width:40px;aspect-ratio:3/4;background:linear-gradient(180deg,#fff 0%,var(--tile-face) 55%,var(--tile-edge) 100%);border-radius:5px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 3px 0 var(--tile-back),0 4px 6px rgba(0,0,0,.18);vertical-align:bottom;position:relative;}
+.tile svg{display:block;width:100%;height:100%;}
+.tile.big{width:84px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),0 6px 0 var(--tile-back),0 8px 14px rgba(0,0,0,.2);}
+.tile.mini{width:26px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1),0 2px 0 var(--tile-back);}
+.tile.micro{width:18px;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12),0 1.5px 0 var(--tile-back);}
+.hand{display:flex;gap:2px;margin:6px 0 10px;padding-bottom:4px;}
+.hand .tile,.hand .pick{flex:1 1 0;min-width:0;max-width:46px;width:auto;}
+.hand.small .tile{max-width:30px;}
+.hand .pick .tile{width:100%;}
+
+.basic{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0 14px;}
+.bx{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted);}
+.bx b{color:var(--ink);font-size:14px;}
+.bx .hand{margin:0 0 4px;}
+.tgroup{margin-bottom:22px;}
+.tgroup h3{font-size:19px;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:14px 8px;}
+.tgrid figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.tgrid .tile{width:44px;}
+.tgrid figcaption{font-size:12px;color:var(--muted);text-align:center;line-height:1.35;}
+
+.quiz{display:flex;gap:18px;align-items:center;flex-wrap:wrap;}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-width:220px;}
+.opt{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 8px;font-weight:700;}
+.opt.right,.pick.right{background:var(--ok-bg);border-color:var(--jade);}
+.opt.wrong,.pick.wrong{background:var(--ng-bg);border-color:var(--red);}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;}
+.stat{font-size:13px;color:var(--muted);margin-left:auto;}
+.btn{background:var(--felt);color:var(--on-felt);border:0;border-radius:10px;padding:11px 20px;font-weight:700;}
+.btn:disabled{opacity:.4;cursor:default;}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line);}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:14px;font-weight:500;}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+
+.yaku{border-bottom:1px solid var(--line);padding:16px 2px;}
+.yaku header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.yaku h3{font-size:21px;}
+.reading{font-size:13px;color:var(--muted);}
+.han{font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;color:#fff;background:var(--muted);align-self:center;}
+.han-1{background:#5E7C70}.han-2{background:var(--indigo)}.han-3{background:var(--jade)}.han-6{background:var(--red)}.han-ym{background:var(--gold)}
+.yaku p{margin:6px 0 4px;}
+.cond{font-size:13px;color:var(--muted);}
+
+.pal{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin:8px 0;}
+.pick{background:none;border:2px solid transparent;border-radius:7px;padding:3px 2px 5px;display:flex;justify-content:center;}
+.pal .tile{width:100%;max-width:40px;}
+.pick[aria-pressed="true"]{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 14%,transparent);}
+.pick[aria-pressed="true"] .tile{transform:translateY(-4px);}
+.pick.missed{border-color:var(--jade);border-style:dashed;}
+.pal .pick.right{border-color:var(--jade);background:var(--ok-bg);border-style:solid;}
+.pal .pick.wrong{border-color:var(--red);background:var(--ng-bg);}
+.pick.cut.right{border-color:var(--jade);}
+.pick.cut.wrong{border-color:var(--red);}
+.pick.cut{padding:0 0 4px;border-width:0 0 3px;border-radius:0;}
+.pick.cut:hover .tile{transform:translateY(-4px);}
+.pick .tile{transition:transform .12s;}
+@media (prefers-reduced-motion:reduce){.pick .tile{transition:none}}
+
+.verdict{padding:10px 14px;border-radius:10px;font-weight:500;margin:14px 0 10px;}
+.verdict.ok{background:var(--ok-bg);}
+.verdict.ng{background:var(--ng-bg);}
+.win{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line);flex-wrap:wrap;}
+.win-head{display:flex;align-items:center;gap:6px;font-size:13px;min-width:80px;}
+.groups{display:flex;gap:8px;flex-wrap:wrap;}
+.grp{display:flex;gap:1px;}
+.scroll{overflow-x:auto;}
+table{border-collapse:collapse;width:100%;font-size:14px;}
+th{text-align:left;font-weight:500;color:var(--muted);font-size:12px;padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap;}
+td{padding:6px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap;}
+td.num{font-variant-numeric:tabular-nums;}
+tr.best td{background:var(--ok-bg);}
+tr.mine td:first-child{box-shadow:inset 3px 0 0 var(--indigo);}
+.uke{display:flex;gap:1px;flex-wrap:wrap;min-width:120px;white-space:normal;}
+@media (max-width:480px){
+  .table h1{font-size:36px;}
+  .basic{grid-template-columns:1fr 1fr 1fr;gap:6px;}
+  .tabs button{font-size:14px;}
+}
+
+/* 豆知識 */
+.draw{background:var(--felt);color:var(--on-felt);border-radius:14px;padding:18px 16px;margin-bottom:22px;display:flex;gap:14px;align-items:flex-start;}
+.draw .tile{flex:0 0 auto;width:46px;}
+.draw-body{flex:1;min-width:0;}
+.draw-kind{font-size:12px;opacity:.75;}
+.draw h3{font-size:20px;margin:2px 0 6px;}
+.draw p{margin:0 0 12px;font-size:15px;}
+.draw .btn{background:var(--on-felt);color:var(--felt);}
+.tv-sec{margin-bottom:26px;}
+.tv-sec > h3{font-size:21px;margin-bottom:4px;}
+.tv{border-bottom:1px solid var(--line);padding:12px 2px;}
+.tv h4{margin:0;font-size:16px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;}
+.tv p{margin:4px 0 0;font-size:15px;}
+.freq{font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;border:1px solid currentColor;}
+.freq-a{color:var(--jade)}.freq-b{color:var(--indigo)}.freq-c{color:var(--gold)}
+.tv .hand{margin:8px 0 0;}
+@media (max-width:480px){.tabs button{font-size:13px;padding:12px 2px 10px;}}
+
+/* チュン */
+.chun{display:inline-block;flex:0 0 auto;width:64px;line-height:0;}
+.chun svg{width:100%;height:auto;display:block;overflow:visible;}
+.hop{animation:hop .45s ease-out;}
+@keyframes hop{0%{transform:translateY(0)}35%{transform:translateY(-10px)}70%{transform:translateY(0)}85%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.hop{animation:none}}
+.guide{display:flex;gap:10px;align-items:flex-end;margin:6px 0 18px;}
+.bubble{position:relative;flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:10px 14px;font-size:15px;}
+.bubble b{font-weight:700;}
+.guide.ok .bubble{background:var(--ok-bg);border-color:transparent;}
+.guide.ng .bubble{background:var(--ng-bg);border-color:transparent;}
+.block .guide{margin:14px 0 8px;}
+.hero-top{display:flex;align-items:flex-end;gap:10px;margin-bottom:18px;}
+.hero-text{flex:1;min-width:0;}
+.table p.hero-bubble{background:rgba(255,255,255,.13);border-radius:16px 16px 4px 16px;padding:10px 14px;margin:10px 0 0;font-size:15px;opacity:1;min-height:3.4em;}
+.hero-chun{width:108px;background:none;border:0;padding:0;cursor:pointer;}
+.draw .chun{width:64px;}
+@media (max-width:480px){.hero-chun{width:92px;}}
+
+/* 言語 */
+.topbar{display:flex;justify-content:flex-end;margin:-8px 0 8px;}
+.lang{display:inline-flex;background:rgba(255,255,255,.1);border-radius:999px;padding:3px;gap:2px;}
+.lang button{background:none;border:0;color:var(--on-felt);font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;opacity:.75;}
+.lang button[aria-pressed="true"]{background:var(--on-felt);color:var(--felt);opacity:1;}
+.brand-sub{display:block;font-family:'Zen Kaku Gothic New',sans-serif;font-size:14px;font-weight:700;letter-spacing:.2em;opacity:.8;margin-top:2px;}
+/* タブ(6つ) */
+.tabs-in{overflow-x:auto;scrollbar-width:none;}
+.tabs-in::-webkit-scrollbar{display:none;}
+.tabs button{flex:1 0 auto;white-space:nowrap;padding:12px 10px 10px;}
+/* 脇役の吹き出し */
+.guide.cameo{margin:-6px 0 10px;}
+.guide.cameo .chun{width:48px;}
+.guide.cameo .bubble{font-size:14px;}
+.bubble .nm,.lb .nm{display:block;font-size:11px;font-weight:700;opacity:.7;margin-bottom:2px;letter-spacing:.04em;}
+.guide.who-kan .bubble{background:#2B2E38;color:#EEF0F4;border-color:transparent;}
+.guide.who-ron .bubble{background:var(--ron-bg);border-color:var(--ron-line);}
+.link{background:none;border:0;padding:0;margin-top:6px;color:var(--indigo);font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:14px;text-align:left;}
+:root[data-theme="dark"] .link{color:#9DB6EC;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .link{color:#9DB6EC;}}
+/* 道場 */
+.sub{font-size:19px;margin:6px 0 10px;}
+.av{display:inline-block;line-height:0;}
+.av svg{width:100%;height:auto;display:block;overflow:visible;}
+.lessons{display:grid;gap:10px;margin-bottom:26px;}
+.lesson{display:grid;grid-template-columns:1fr auto;grid-template-areas:"ln faces" "t faces" "d faces";text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;gap:2px 10px;}
+.lesson .ln{grid-area:ln;}
+.lesson b{grid-area:t;font-family:'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',serif;font-size:19px;}
+.lesson .ld{grid-area:d;font-size:13px;color:var(--muted);}
+.lesson .faces{grid-area:faces;display:flex;align-self:center;padding-left:8px;}
+.faces .av{width:36px;margin-left:-8px;}
+.ln{font-size:12px;color:var(--muted);font-weight:700;}
+.donebadge{color:var(--jade);}
+.casts{display:grid;gap:10px;}
+.cast{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+.cast .av{width:64px;flex:0 0 auto;}
+.cast p{margin:2px 0 0;font-size:14px;color:var(--muted);line-height:1.6;}
+.backlink{background:none;border:0;padding:0;color:var(--muted);font-size:14px;margin-bottom:10px;}
+.lesson-title{font-size:23px;margin:2px 0 16px;}
+.stage{display:flex;flex-direction:column;gap:12px;min-height:120px;cursor:pointer;}
+.line{display:flex;gap:8px;align-items:flex-end;max-width:94%;}
+.line.right{flex-direction:row-reverse;align-self:flex-end;}
+.line .av{width:52px;flex:0 0 auto;}
+.lb{padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.65;min-width:0;}
+.line.left .lb{border-bottom-left-radius:4px;}
+.line.right .lb{border-bottom-right-radius:4px;}
+.who-chun .lb{background:var(--surface);border:1px solid var(--line);}
+.who-kan .lb{background:#2B2E38;color:#EEF0F4;}
+.who-ron .lb{background:var(--ron-bg);border:1px solid var(--ron-line);}
+.line.new{animation:pop .3s ease-out;}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.line.new{animation:none;}}
+.ltiles{display:flex;gap:2px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+.ltiles .arrow{margin:0 6px;font-weight:700;color:var(--jade);}
+.tile.hl{box-shadow:0 0 0 2px var(--jade),0 2px 0 var(--tile-back);}
+.lesson-end{text-align:center;padding:16px;background:var(--ok-bg);border-radius:14px;}
+.lesson-end .row{justify-content:center;}
+#dojo-ctrl{margin-top:16px;}
+
+/* デイリー */
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;}
+.dhead b{font-size:17px;}
+.dots{display:flex;gap:6px;}
+.dot{width:16px;height:16px;border-radius:4px;background:var(--line);}
+.dot.cur{outline:2px solid var(--ink);outline-offset:2px;}
+.dot.g2{background:#3E9B5F;}.dot.g1{background:#D9A93B;}.dot.g0{background:#C4493B;}
+details.cmp{margin-top:10px;}
+details.cmp summary{cursor:pointer;color:var(--muted);font-size:14px;font-weight:700;padding:6px 0;}
+.dres{text-align:center;}
+.dres h3{font-size:21px;margin-bottom:10px;}
+.vs{display:flex;justify-content:center;align-items:center;gap:22px;margin:4px 0 10px;}
+.vs > div{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.vs .av{width:70px;}
+.vs .vl{font-size:12px;color:var(--muted);font-weight:700;}
+.vs b{font-family:'Shippori Mincho B1','Hiragino Mincho ProN',serif;font-size:34px;line-height:1;}
+.vsx{font-weight:800;color:var(--muted);font-size:14px;}
+.grid{font-size:28px;letter-spacing:4px;margin:6px 0 2px;}
+.dstats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin:14px 0 16px;}
+.dstats b{display:block;font-size:24px;font-variant-numeric:tabular-nums;}
+.dstats span{font-size:12px;color:var(--muted);}
+.btn.share{background:var(--red);color:#fff;padding:13px 28px;font-size:16px;}
+.copied{color:var(--jade);font-weight:700;margin:10px 0 0;}
+.sharebox{width:100%;min-height:120px;margin-top:6px;font:inherit;font-size:15px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);}
+.rv{border-bottom:1px solid var(--line);padding:10px 0;}
+.rv-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;margin-bottom:6px;}
+.rv-h span{display:inline-flex;align-items:center;gap:4px;color:var(--muted);}
+.rv-h .sq{font-size:16px;}
+
+/* ヒント */
+.btn.hint{margin-top:4px;}
+.pick.glow .tile{box-shadow:0 0 0 2px var(--gold),0 0 12px rgba(184,134,43,.55),0 3px 0 var(--tile-back);}
+.pick.dim{opacity:.35;}
+.toast{display:inline-block;background:color-mix(in srgb,var(--gold) 18%,transparent);color:var(--ink);border-radius:999px;padding:4px 14px;font-size:14px;font-weight:700;margin:8px 0;}
+/* 難易度 */
+.lv{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid currentColor;vertical-align:1px;}
+.lv-easy{color:var(--jade);}.lv-medium{color:var(--indigo);}.lv-hard{color:var(--red);}
+:root[data-theme="dark"] .lv-medium{color:#9DB6EC;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lv-medium{color:#9DB6EC;}}
+.kanmark{font-weight:700;}
+.tabs::after{content:"";position:absolute;right:0;top:0;bottom:1px;width:28px;background:linear-gradient(to right,transparent,var(--surface));pointer-events:none;}
+/* 準正解 */
+.dot.g15{background:#3E7FC4;}
+.pick.near{border-color:#3E7FC4;background:color-mix(in srgb,#3E7FC4 14%,transparent);}
+.pick.cut.near{border-color:#3E7FC4;}
+tr.nearrow td{background:color-mix(in srgb,#3E7FC4 12%,transparent);}
+/* 用語 */
+details.gloss{margin:4px 0 8px;font-size:14px;}
+details.gloss summary{cursor:pointer;color:var(--muted);font-weight:700;padding:4px 0;}
+details.gloss > div{background:var(--bg);border-radius:10px;padding:10px 12px;margin-top:4px;line-height:1.8;}
+/* デイリーの開始画面 */
+.dstart{text-align:center;}
+.dstart h3{font-size:21px;margin-bottom:6px;}
+.dstart > p{margin:0 0 10px;}
+.lvrow{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:6px 0 12px;}
+.vs.small .av{width:56px;}
+/* 初回の案内 */
+.wel-cast{display:flex;justify-content:center;gap:6px;margin:4px 0 10px;}
+.wel-cast .av{width:72px;}
+.welopts{display:grid;gap:10px;}
+.welopt{display:flex;flex-direction:column;gap:2px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;}
+.welopt b{font-size:17px;}
+.welopt span{font-size:14px;color:var(--muted);}
+.welopt:hover{border-color:var(--felt);}
+
+/* ツモの図と切る練習 */
+.widefig{margin:2px 0 4px;}
+.widefig .hand{margin:0 0 4px;}
+.drawfig{display:flex;align-items:flex-end;gap:10px;margin:2px 0 4px;}
+.drawfig > .hand{flex:13 1 0;margin:0;}
+.drawn{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.drawn .hand{margin:0;width:100%;}
+.drawn span{font-size:11px;font-weight:700;color:var(--jade);}
+.tryhand{margin:2px 0 4px;}
+.tryprompt{text-align:center;font-weight:700;color:var(--ink);}
+
+/* タブ4つ＋サブメニュー */
+.tabs::after{display:none;}
+.tabs button{flex:1 1 0;}
+.subnav-wrap{position:sticky;top:calc(env(safe-area-inset-top,0px) + 47px);z-index:4;background:var(--bg);border-bottom:1px solid var(--line);}
+.subnav{max-width:760px;margin:0 auto;padding:8px 16px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:0;scrollbar-width:none;}
+.subnav::-webkit-scrollbar{display:none;}
+.subnav .chip{white-space:nowrap;}
+/* ホーム */
+.nextcard{background:var(--felt);color:var(--on-felt);border-radius:16px;padding:16px;margin-bottom:12px;}
+.nc-head{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
+.nc-head .av{width:72px;flex:0 0 auto;}
+.nc-head b{display:block;font-family:'Shippori Mincho B1','Hiragino Mincho ProN',serif;font-size:20px;line-height:1.35;}
+.nc-head span:not(.av){display:block;font-size:14px;opacity:.85;margin-top:2px;}
+.nc-label{font-size:12px;font-weight:700;opacity:.75;letter-spacing:.08em;}
+.nextcard .btn{width:100%;}
+.dailyrow{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:15px;flex-wrap:wrap;}
+.dailyrow.done{background:var(--ok-bg);border-color:transparent;}
+.dailyrow .note{margin:0;font-size:13px;}
+.dailyrow .go{font-weight:800;color:var(--red);}
+details.road{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin-bottom:22px;}
+details.road summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:10px 0;list-style:none;}
+details.road summary::-webkit-details-marker{display:none;}
+details.road summary b{font-size:16px;}
+details.road summary .note{margin:0;}
+.steps{display:flex;flex-direction:column;gap:6px;padding-bottom:12px;}
+.step{display:flex;align-items:center;gap:12px;text-align:left;background:none;border:1px solid transparent;border-radius:12px;padding:8px 10px;}
+.step .num{flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;background:var(--bg);border:1px solid var(--line);}
+.step.done .num{background:var(--jade);color:#fff;border-color:var(--jade);}
+.step.done .st{opacity:.6;}
+.step.next{border-color:var(--red);background:color-mix(in srgb,var(--red) 7%,transparent);}
+.step.next .num{background:var(--red);color:#fff;border-color:var(--red);}
+.step .st{flex:1;min-width:0;display:flex;flex-direction:column;}
+.step .st b{font-size:15px;}
+.step .st span{font-size:12px;color:var(--muted);}
+.nextbadge{font-size:11px;font-weight:800;color:#fff;background:var(--red);border-radius:999px;padding:2px 8px;}
+.mores{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.more{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;}
+.more .ic{height:48px;display:flex;align-items:center;}
+.more .ic .av{width:52px;}
+.more .ic .tile{width:34px;}
+.more b{font-size:15px;}
+.more span:not(.ic):not(.av){font-size:12px;color:var(--muted);line-height:1.5;}
+#name-block{scroll-margin-top:110px;}
+
+/* 2回目以降はヘッダーを1行に折りたたむ */
+.table{position:relative;}
+.table.compact{padding:8px 16px;}
+.table.compact .table-in{display:flex;align-items:center;gap:8px;}
+.table.compact .hero-top{order:1;margin:0;align-items:center;gap:8px;flex:1;min-width:0;}
+.table.compact .hero-chun{order:-1;width:42px;}
+.table.compact .hero-text{flex:0 1 auto;}
+.table.compact h1{font-size:24px;letter-spacing:.05em;}
+.table.compact .brand-sub{display:none;}
+.table.compact .hero-bubble{display:none;}
+.table.compact #hero-tiles{display:none;}
+.table.compact .topbar{order:2;margin:0;}
+.table.compact .lang button{padding:4px 9px;font-size:12px;}
+.table.compact.saying .hero-bubble{display:block;position:absolute;left:12px;right:12px;top:calc(100% - 4px);z-index:8;margin:0;background:var(--felt-2);color:var(--on-felt);box-shadow:0 8px 20px rgba(0,0,0,.25);border-radius:4px 16px 16px 16px;animation:pop .25s ease-out;}
+@media (prefers-reduced-motion:reduce){.table.compact.saying .hero-bubble{animation:none;}}
+
+/* 小さい画面 */
+.table.compact h1{white-space:nowrap;}
+.lang .ls{display:none;}
+@media (max-width:400px){.table.compact .lang .lf{display:none;}.table.compact .lang .ls{display:inline;}.table.compact .lang button{padding:4px 10px;}}
+details.road summary .note{white-space:nowrap;margin-left:8px;}
+/* 数字の幅をそろえて、更新時に文字がずれないようにする */
+#countdown,.stat,.vs b,.dailyrow,.dstats,.toast,td.num{font-variant-numeric:tabular-nums;}
+/* 道場の操作ボタンを親指の届く画面下に固定 */
+#dojo-ctrl{position:sticky;bottom:0;z-index:3;margin-top:8px;padding:18px 0 calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom,transparent,var(--bg) 35%);}
+.panel:focus{outline:none;}
+.stage > *{scroll-margin-bottom:96px;}
+
+/* 実戦準備 */
+.tabs button{font-size:14px;padding-left:4px;padding-right:4px;}
+@media (max-width:400px){.tabs button{font-size:12.5px;}}
+.sbadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.sbadge{font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);}
+.sbadge.strong{background:var(--felt);color:var(--on-felt);border-color:var(--felt);}
+.sq{font-weight:700;font-size:16px;margin:4px 0 10px;}
+.opts.one{grid-template-columns:1fr;}
+.opts.one .opt{text-align:left;padding:12px 14px;font-variant-numeric:tabular-nums;}
+.rphead{display:flex;justify-content:space-between;}
+.rpsorted{min-height:40px;}
+.pick.shake{animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.pick.shake{animation:none;outline:2px solid var(--red);}}
+.meld{display:inline-flex;align-items:flex-end;gap:2px;}
+.meld .tile{width:34px;}
+.meld .sidew{width:46px;height:34px;position:relative;display:inline-block;flex:0 0 auto;margin:0 4px;}
+.meld .sidew .tile{position:absolute;left:6px;top:-6px;transform:rotate(90deg);}
+.meldq{display:flex;justify-content:center;padding:14px 0 12px;}
+.meldfig{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:4px 0 6px;}
+.meldfig figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.meldfig .meld .tile{width:26px;}
+.meldfig .meld .sidew{width:35px;height:26px;}
+.meldfig .meld .sidew .tile{left:4.5px;top:-4.5px;}
+.meldfig figcaption{font-size:12px;color:var(--muted);font-weight:700;}
+.tablecards{grid-template-columns:repeat(3,1fr);margin-bottom:22px;}
+@media (max-width:420px){.tablecards{grid-template-columns:1fr 1fr;}}
+.beta{font-family:'Zen Kaku Gothic New',sans-serif;font-size:.38em;font-weight:700;vertical-align:super;margin-left:4px;background:var(--red);color:#fff;border-radius:999px;padding:1px 7px;letter-spacing:0;}
+.foot{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:28px 0 8px;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="table"><div class="table-in">
+  <div class="topbar"><div class="lang" id="lang" role="group" aria-label="Language">
+    <button data-lang="ja" lang="ja" aria-label="日本語"><span class="lf">日本語</span><span class="ls">JA</span></button><button data-lang="en" lang="en" aria-label="English"><span class="lf">English</span><span class="ls">EN</span></button><button data-lang="es" lang="es" aria-label="Español"><span class="lf">Español</span><span class="ls">ES</span></button>
+  </div></div>
+  <div class="hero-top">
+    <div class="hero-text"><h1>雀学<span class="beta">β</span><span class="brand-sub" id="brand-sub" data-i18n="brandSub"></span></h1><p class="hero-bubble" id="hero-say" aria-live="polite" data-i18n="heroSay"></p></div>
+    <button class="chun hero-chun" id="hero-chun" data-i18n-aria="chunAria"></button>
+  </div>
+  <div id="hero-tiles"></div>
+</div></div>
+<nav class="tabs" role="tablist" aria-label="Menu"><div class="tabs-in">
+  <button role="tab" data-tab="home" data-i18n="tabHome"></button>
+  <button role="tab" data-tab="daily" data-i18n="tabDaily"></button>
+  <button role="tab" data-tab="study" data-i18n="tabStudy"></button>
+  <button role="tab" data-tab="practice" data-i18n="tabPractice"></button>
+  <button role="tab" data-tab="table" data-i18n="tabTable"></button>
+</div></nav>
+<div class="subnav-wrap"><div class="chips subnav" id="subnav"></div></div>
+<main>
+<section class="panel" role="tabpanel" tabindex="-1" id="home" hidden>
+  <div id="home-body"></div>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="score" hidden>
+  <h2 data-i18n="scoreH"></h2>
+  <div class="guide" data-mood="happy"><span class="chun"></span><div class="bubble" data-i18n="scoreGuide"></div></div>
+  <p class="note"><button class="link" data-lesson="score" data-i18n="scoreLessonLink"></button></p>
+  <div class="chips" id="score-level">
+    <button class="chip" data-lv="limit" aria-pressed="true" data-i18n="lv_limit"></button>
+    <button class="chip" data-lv="basic" aria-pressed="false" data-i18n="lv_basic"></button>
+    <button class="chip" data-lv="all" aria-pressed="false" data-i18n="lv_all"></button>
+  </div>
+  <div class="block">
+    <div id="score-card"></div>
+    <div id="score-fb" aria-live="polite"></div>
+    <div class="row"><button class="btn" id="score-next" hidden data-i18n="next"></button><span class="stat" id="st-score"></span></div>
+  </div>
+  <p class="note" data-i18n="scoreFoot"></p>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="riipai" hidden>
+  <h2 data-i18n="riipaiH"></h2>
+  <div class="guide" data-mood="normal"><span class="chun"></span><div class="bubble" data-i18n="riipaiGuide"></div></div>
+  <div id="riipai-body"></div>
+  <p class="note" data-i18n="rpNote"></p>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="manner" hidden>
+  <h2 data-i18n="mannerH"></h2>
+  <div class="guide" data-mood="think"><span class="chun"></span><div class="bubble" data-i18n="mannerGuide"></div></div>
+  <p class="note"><button class="link" data-lesson="naki" data-i18n="mannerLessonLink"></button></p>
+  <div id="manner-body"></div>
+  <p class="note"><span id="st-manner"></span></p>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="welcome" hidden>
+  <h2 data-i18n="welH"></h2>
+  <div id="welcome-body"></div>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="daily" hidden>
+  <h2 data-i18n="dailyH"></h2>
+  <div class="guide" data-mood="happy"><span class="chun"></span><div class="bubble" data-i18n="dailyGuide"></div></div>
+  <div id="daily-body"></div>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="learn" hidden>
+  <h2 data-i18n="learnH"></h2>
+  <div class="guide" data-mood="normal"><span class="chun"></span><div class="bubble" data-i18n="learnGuide"></div></div>
+  <div class="block">
+    <div class="basic" id="basic-ex"></div>
+    <p class="note" data-i18n="basicNote"></p>
+    <div class="hand" id="basic-full"></div>
+  </div>
+  <p><button class="link" data-lesson="nanikiru" data-i18n="nextDojo"></button></p>
+  <div class="block" id="name-block">
+    <h3 data-i18n="nameH"></h3>
+    <div class="quiz"><div id="name-tile"></div><div class="opts" id="name-opts"></div></div>
+    <div id="name-fb" aria-live="polite"></div>
+    <div class="row"><button class="btn ghost" id="name-next" data-i18n="nextTile"></button><span class="stat" id="st-name"></span></div>
+  </div>
+  <h2 data-i18n="typesH"></h2>
+  <p class="lead" data-i18n="typesLead"></p>
+  <div id="tile-groups"></div>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="dojo" hidden>
+  <h2 data-i18n="dojoH"></h2>
+  <div class="guide" data-mood="happy"><span class="chun"></span><div class="bubble" data-i18n="dojoGuide"></div></div>
+  <div id="dojo-body"></div>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="yaku" hidden>
+  <h2 data-i18n="yakuH"></h2>
+  <div class="guide" data-mood="happy"><span class="chun"></span><div class="bubble" data-i18n="yakuGuide"></div></div>
+  <div class="chips" id="yaku-filter"></div>
+  <div id="yaku-list"></div>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="wait" hidden>
+  <h2 data-i18n="waitH"></h2>
+  <div class="guide" data-mood="think"><span class="chun"></span><div class="bubble" data-i18n="waitGuide"></div></div>
+  <div class="chips" id="wait-mode">
+    <button class="chip" data-m="mix" aria-pressed="true" data-i18n="modeMix"></button>
+    <button class="chip" data-m="chin" aria-pressed="false" data-i18n="modeChin"></button>
+  </div>
+  <div class="block">
+    <div class="hand" id="wait-hand"></div>
+    <p class="note" data-i18n="tapNote"></p>
+    <div class="pal" id="wait-pal"></div>
+    <div id="wait-hint"></div>
+    <div class="row"><button class="btn" id="wait-check" disabled data-i18n="check"></button><button class="btn" id="wait-next" hidden data-i18n="next"></button><span class="stat" id="st-wait"></span></div>
+    <div id="wait-fb" aria-live="polite"></div>
+  </div>
+  <p class="note" data-i18n="waitFoot"></p>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="nani" hidden>
+  <h2 data-i18n="naniH"></h2>
+  <div class="guide" data-mood="think"><span class="chun"></span><div class="bubble" data-i18n="naniGuide"></div></div>
+  <p class="note"><button class="link" data-lesson="nanikiru" data-i18n="whatIsNani"></button></p>
+  <div class="chips" id="nani-level">
+    <button class="chip" data-lv="easy" aria-pressed="false" data-i18n="lv_easy"></button>
+    <button class="chip" data-lv="medium" aria-pressed="true" data-i18n="lv_medium"></button>
+    <button class="chip" data-lv="hard" aria-pressed="false" data-i18n="lv_hard"></button>
+  </div>
+  <div class="block">
+    <p class="note" id="nani-info"></p>
+    <div class="hand" id="nani-hand"></div>
+    <div id="nani-hint"></div>
+    <div class="row"><button class="btn" id="nani-next" hidden data-i18n="next"></button><span class="stat" id="st-nani"></span></div>
+    <div id="nani-fb" aria-live="polite"></div>
+  </div>
+  <p class="note" data-i18n="naniFoot"></p>
+</section>
+<section class="panel" role="tabpanel" tabindex="-1" id="trivia" hidden>
+  <h2 data-i18n="triviaH"></h2>
+  <div class="guide" data-mood="happy"><span class="chun"></span><div class="bubble" data-i18n="triviaGuide"></div></div>
+  <div class="draw" id="draw"></div>
+  <div class="chips" id="tv-filter"></div>
+  <div id="tv-list"></div>
+  <p class="note" data-i18n="triviaFoot"></p>
+</section>
+</main>
+<script>
+// ===== 牌データと計算ロジック =====
+const KANJI=['一','二','三','四','五','六','七','八','九'];
+const HONOR=['東','南','西','北','白','發','中'];
+const NUMREAD=['イー','リャン','サン','スー','ウー','ロー','チー','パー','キュー'];
+const HONORREAD=['トン','ナン','シャー','ペー','ハク','ハツ','チュン'];
+function parse(str){
+  const out=[];let buf='';
+  for(const ch of str){
+    if(/\d/.test(ch)) buf+=ch;
+    else{const b={m:0,p:9,s:18,z:27}[ch];for(const d of buf)out.push(b+(+d)-1);buf='';}
+  }
+  return out;
+}
+function counts(arr){const c=new Array(34).fill(0);for(const t of arr)c[t]++;return c;}
+function toList(c){const a=[];for(let i=0;i<34;i++)for(let k=0;k<c[i];k++)a.push(i);return a;}
+
+// ===== 高速な向聴数計算(種類ごとに分解してキャッシュ) =====
+const SUIT_CACHE=new Map();
+function suitCombos(c,off,isHonor){
+  let key='';for(let i=0;i<(isHonor?7:9);i++)key+=c[off+i];
+  key=(isHonor?'z':'s')+key;
+  let r=SUIT_CACHE.get(key);if(r)return r;
+  const res=new Map();
+  const a=[];for(let i=0;i<(isHonor?7:9);i++)a.push(c[off+i]);
+  const n=a.length;
+  function add(m,t,p){const k=m*100+t*10+p;res.set(k,[m,t,p]);}
+  function dfs(i,m,t,p){
+    while(i<n&&a[i]===0)i++;
+    if(i>=n){add(m,Math.min(t,4),p);return;}
+    if(a[i]>=3){a[i]-=3;dfs(i,m+1,t,p);a[i]+=3;}
+    if(!isHonor&&i<=6&&a[i+1]&&a[i+2]){a[i]--;a[i+1]--;a[i+2]--;dfs(i,m+1,t,p);a[i]++;a[i+1]++;a[i+2]++;}
+    if(a[i]>=2){a[i]-=2;if(!p)dfs(i,m,t,1);dfs(i,m,t+1,p);a[i]+=2;}
+    if(!isHonor&&i<=7&&a[i+1]){a[i]--;a[i+1]--;dfs(i,m,t+1,p);a[i]++;a[i+1]++;}
+    if(!isHonor&&i<=6&&a[i+2]){a[i]--;a[i+2]--;dfs(i,m,t+1,p);a[i]++;a[i+2]++;}
+    a[i]--;dfs(i,m,t,p);a[i]++;
+  }
+  dfs(0,0,0,0);
+  // 支配される組み合わせを除く
+  const all=[...res.values()];
+  r=all.filter(x=>!all.some(y=>y!==x&&y[0]>=x[0]&&y[1]>=x[1]&&y[2]>=x[2]&&(y[0]>x[0]||y[1]>x[1]||y[2]>x[2])));
+  SUIT_CACHE.set(key,r);
+  if(SUIT_CACHE.size>200000)SUIT_CACHE.clear();
+  return r;
+}
+function normalShanten(c){
+  const A=suitCombos(c,0,false),B=suitCombos(c,9,false),C=suitCombos(c,18,false),D=suitCombos(c,27,true);
+  let best=8;
+  for(const a of A)for(const b of B)for(const d of C)for(const e of D){
+    const p=a[2]+b[2]+d[2]+e[2];if(p>1)continue;
+    const m=a[0]+b[0]+d[0]+e[0],t=a[1]+b[1]+d[1]+e[1];
+    const mm=Math.min(m,4);
+    const s=8-2*mm-Math.min(t+(m-mm),4-mm)-p;
+    if(s<best)best=s;
+  }
+  return best;
+}
+
+function chiitoiShanten(c){
+  let pairs=0,kinds=0;for(const n of c){if(n>=1)kinds++;if(n>=2)pairs++;}
+  return 6-pairs+Math.max(0,7-kinds);
+}
+const YAOCHU=[0,8,9,17,18,26,27,28,29,30,31,32,33];
+function kokushiShanten(c){let kinds=0,pair=0;for(const i of YAOCHU){if(c[i]>=1)kinds++;if(c[i]>=2)pair=1;}return 13-kinds-pair;}
+function shanten(c){return Math.min(normalShanten(c),chiitoiShanten(c),kokushiShanten(c));}
+function isAgari(c){return shanten(c)===-1;}
+
+function melds(c,i){
+  while(i<34&&!c[i])i++;
+  if(i>=34)return [];
+  if(c[i]>=3){c[i]-=3;const r=melds(c,i);c[i]+=3;if(r)return [[i,i,i],...r];}
+  if(i<27&&i%9<=6&&c[i+1]&&c[i+2]){c[i]--;c[i+1]--;c[i+2]--;const r=melds(c,i);c[i]++;c[i+1]++;c[i+2]++;if(r)return [[i,i+1,i+2],...r];}
+  return null;
+}
+function decompose(c){
+  for(let i=0;i<34;i++)if(c[i]>=2){c[i]-=2;const g=melds(c,0);c[i]+=2;if(g)return [[i,i],...g];}
+  if(chiitoiShanten(c)===-1){const g=[];for(let i=0;i<34;i++)if(c[i]>=2)g.push([i,i]);return g;}
+  return null;
+}
+let RNG=Math.random;
+function rnd(n){return Math.floor(RNG()*n);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// 待ち当て問題
+function genTenpai(mode){
+  for(let tries=0;tries<500;tries++){
+    const c=new Array(34).fill(0);
+    let suits;
+    if(mode==='chin') suits=[rnd(3)];
+    else{ suits=shuffle([0,1,2]).slice(0,2); if(Math.random()<.5) suits.push(3); }
+    const pick=()=>{const s=suits[rnd(suits.length)];return s===3?27+rnd(7):s*9+rnd(9);};
+    const p=pick();c[p]+=2;
+    let ok=true;
+    for(let k=0;k<4;k++){
+      let placed=false;
+      for(let a=0;a<20&&!placed;a++){
+        const t=pick();
+        if(t<27&&Math.random()<.72){
+          const st=t-(t%9)+rnd(7);
+          if(c[st]<4&&c[st+1]<4&&c[st+2]<4){c[st]++;c[st+1]++;c[st+2]++;placed=true;}
+        }else if(c[t]<=1){c[t]+=3;placed=true;}
+      }
+      if(!placed){ok=false;break;}
+    }
+    if(!ok)continue;
+    const list=toList(c);
+    const rm=list[rnd(list.length)];c[rm]--;
+    const waits=[];
+    for(let x=0;x<34;x++){if(c[x]>=4)continue;c[x]++;if(isAgari(c))waits.push(x);c[x]--;}
+    if(!waits.length)continue;
+    if(waits.length<2&&Math.random()<(mode==='chin'?.85:.7))continue;
+    return {hand:toList(c),waits,suits:[...new Set(toList(c).map(t=>Math.min(3,Math.floor(t/9))))].sort()};
+  }
+  return null;
+}
+
+// 何切る
+function evaluateDiscards(hand14){
+  const c=counts(hand14);
+  const res=[];
+  for(let d=0;d<34;d++){
+    if(!c[d])continue;
+    c[d]--;
+    const s=shanten(c);
+    const tiles=[];let total=0;
+    for(let x=0;x<34;x++){
+      const remain=4-c[x]-(x===d?1:0);
+      if(remain<=0)continue;
+      c[x]++;
+      if(shanten(c)<s){tiles.push(x);total+=remain;}
+      c[x]--;
+    }
+    c[d]++;
+    res.push({tile:d,shanten:s,tiles,total});
+  }
+  res.sort((a,b)=>a.shanten-b.shanten||b.total-a.total||a.tile-b.tile);
+  return res;
+}
+// 初心者の定石(孤立字牌→1・9→つながりの少ない牌)で選ぶ牌
+function simplePick(hand){
+  const c=counts(hand);let best=null,bs=1e9;
+  for(const t of new Set(hand)){
+    let nb=0;
+    if(t>=27)nb=c[t]-1;
+    else{const s=Math.floor(t/9)*9;for(let d=-2;d<=2;d++){const u=t+d;if(u>=s&&u<s+9)nb+=c[u]-(d===0?1:0);}}
+    const edge=t>=27?0:(t%9===0||t%9===8)?1:(t%9===1||t%9===7)?2:3;
+    const sc=nb*10+edge;if(sc<bs){bs=sc;best=t;}
+  }
+  return best;
+}
+// 難易度
+// easy  : 定石で解け、最善手に字牌がある、または最善手が2つある
+// medium: 定石で解けるが最善手は数牌1つだけ、または定石では解けず最善手が2つ
+// hard  : 定石では解けず、最善手が1つだけ
+function classifyNani(hand,ev){
+  const b=ev[0],bt=ev.filter(x=>x.shanten===b.shanten&&x.total===b.total).map(x=>x.tile);
+  const hit=bt.includes(simplePick(hand));
+  if(hit)return (bt.length===1&&bt[0]<27)?'medium':'easy';
+  return bt.length===1?'hard':'medium';
+}
+function genNanikiru(level){
+  level=level||'medium';
+  for(let tries=0;tries<6000;tries++){
+    const wall=[];for(let i=0;i<34;i++)for(let k=0;k<4;k++)wall.push(i);
+    shuffle(wall);
+    // 難しい問題ほど字牌を減らす(孤立字牌を切るだけの問題を避ける)
+    const maxHonor=level==='easy'?14:level==='medium'?3:2;
+    const hand=[];for(const t of wall){if(hand.length>=14)break;if(t>=27&&hand.filter(x=>x>=27).length>=maxHonor)continue;hand.push(t);}
+    hand.sort((a,b)=>a-b);
+    const s=shanten(counts(hand));
+    if(s!==1&&s!==2)continue;
+    const ev=evaluateDiscards(hand);
+    const b=ev[0];
+    if(ev.filter(x=>x.shanten===b.shanten&&x.total===b.total).length>2)continue;
+    const lv=classifyNani(hand,ev);
+    if(lv!==level&&tries<5900)continue;
+    return {hand,ev,shanten:s,level:lv};
+  }
+  return null;
+}
+
+
+
+// ===== 牌の描画 =====
+const LAY={1:[[.5,.5]],2:[[.5,.27],[.5,.73]],3:[[.26,.2],[.5,.5],[.74,.8]],4:[[.3,.25],[.7,.25],[.3,.75],[.7,.75]],5:[[.27,.2],[.73,.2],[.5,.5],[.27,.8],[.73,.8]],6:[[.3,.18],[.7,.18],[.3,.5],[.7,.5],[.3,.82],[.7,.82]],7:[[.2,.12],[.5,.22],[.8,.32],[.3,.6],[.7,.6],[.3,.86],[.7,.86]],8:[[.3,.12],[.7,.12],[.3,.37],[.7,.37],[.3,.63],[.7,.63],[.3,.88],[.7,.88]],9:[[.2,.18],[.5,.18],[.8,.18],[.2,.5],[.5,.5],[.8,.5],[.2,.82],[.5,.82],[.8,.82]]};
+const SLAY={2:[[.5,.27],[.5,.73]],3:[[.5,.27],[.3,.73],[.7,.73]],4:[[.3,.27],[.7,.27],[.3,.73],[.7,.73]],5:[[.25,.24],[.75,.24],[.5,.5],[.25,.76],[.75,.76]],6:[[.2,.27],[.5,.27],[.8,.27],[.2,.73],[.5,.73],[.8,.73]],7:[[.5,.13],[.2,.5],[.5,.5],[.8,.5],[.2,.84],[.5,.84],[.8,.84]],8:[[.3,.12],[.7,.12],[.3,.37],[.7,.37],[.3,.63],[.7,.63],[.3,.88],[.7,.88]],9:[[.2,.18],[.5,.18],[.8,.18],[.2,.5],[.5,.5],[.8,.5],[.2,.82],[.5,.82],[.8,.82]]};
+const RED='#B8352A',BLUE='#27488A',GREEN='#2B7A4B',INK='#1E2622';
+const PRED={1:[0],3:[1],5:[2],6:[2,3,4,5],7:[3,4,5,6],9:[3,4,5]};
+const PGRN={7:[0,1,2]};
+const SRED={5:[2],7:[0],9:[1,4,7]};
+const SH={2:13,3:12,4:12,5:10,6:12,7:8.5,8:6.8,9:8.5};
+const SERIF="'Shippori Mincho B1','Hiragino Mincho ProN','Yu Mincho',serif";
+function tileSVG(i){
+  let s='';
+  const X=f=>3+f*24,Y=f=>3+f*34;
+  if(i<9){
+    s=`<text x="15" y="18" font-size="13" text-anchor="middle" fill="${INK}" font-family="${SERIF}" font-weight="700">${KANJI[i]}</text><text x="15" y="35" font-size="14" text-anchor="middle" fill="${RED}" font-family="${SERIF}" font-weight="700">萬</text>`;
+  }else if(i<18){
+    const n=i-8, r=n===1?9.5:n<=4?5.2:n<=6?4.3:n===9?3.7:3.4;
+    LAY[n].forEach((p,k)=>{
+      const col=(PRED[n]||[]).includes(k)?RED:(PGRN[n]||[]).includes(k)?GREEN:BLUE;
+      s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="${r}" fill="none" stroke="${col}" stroke-width="${n===1?2:1.3}"/><circle cx="${X(p[0])}" cy="${Y(p[1])}" r="${r*.4}" fill="${col}"/>`;
+      if(n===1)s+=`<circle cx="15" cy="20" r="6" fill="none" stroke="${GREEN}" stroke-width="1"/>`;
+    });
+  }else if(i<27){
+    const n=i-17;
+    if(n===1){
+      s=`<rect x="12" y="6" width="6" height="28" rx="3" fill="${GREEN}"/><rect x="11" y="18.5" width="8" height="3" rx="1.2" fill="${RED}"/><circle cx="15" cy="9" r="2" fill="${RED}"/>`;
+    }else{
+      const h=SH[n],w=3.2;
+      SLAY[n].forEach((p,k)=>{
+        const col=(SRED[n]||[]).includes(k)?RED:GREEN;
+        const x=X(p[0])-w/2,y=Y(p[1])-h/2;
+        s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="1.4" fill="${col}"/><rect x="${x-.4}" y="${y+h/2-.6}" width="${w+.8}" height="1.2" fill="#fff" opacity=".7"/>`;
+      });
+    }
+  }else{
+    const h=i-27;
+    if(h===4) s=`<rect x="6.5" y="8" width="17" height="24" rx="2" fill="none" stroke="${BLUE}" stroke-width="1.8"/>`;
+    else s=`<text x="15" y="27.5" font-size="20" text-anchor="middle" fill="${h===5?GREEN:h===6?RED:INK}" font-family="${SERIF}" font-weight="800">${HONOR[h]}</text>`;
+  }
+  return `<svg viewBox="0 0 30 40" aria-hidden="true">${s}</svg>`;
+}
+
+function chunSVG(mood){
+  const B='#A9744B',D='#6B4227',F='#FBF6EC',K='#2B211B',O='#E3A33B';
+  let eyes='',fx='';
+  if(mood==='happy'){
+    eyes=`<path d="M40 58 q6 -7 12 0" stroke="${K}" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M68 58 q6 -7 12 0" stroke="${K}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+    fx=`<path d="M104 22 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2z" fill="#E8C14A"/><path d="M14 30 l1.4 4 l4 1.4 l-4 1.4 l-1.4 4 l-1.4 -4 l-4 -1.4 l4 -1.4z" fill="#E8C14A"/>`;
+  }else if(mood==='oops'){
+    eyes=`<path d="M41 52 l9 5.5 l-9 5.5" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M79 52 l-9 5.5 l9 5.5" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    fx=`<path d="M100 26 q6 9 0 13 q-6 -4 0 -13z" fill="#7FB3E0"/>`;
+  }else if(mood==='think'){
+    eyes=`<circle cx="46" cy="57" r="4.8" fill="${K}"/><circle cx="47.5" cy="55.4" r="1.6" fill="#fff"/><path d="M69 57 h10" stroke="${K}" stroke-width="3" stroke-linecap="round"/>`;
+    fx=`<circle cx="104" cy="30" r="2.5" fill="currentColor" opacity=".35"/><circle cx="110" cy="20" r="3.5" fill="currentColor" opacity=".35"/>`;
+  }else{
+    eyes=`<circle cx="46" cy="57" r="5" fill="${K}"/><circle cx="47.7" cy="55.2" r="1.7" fill="#fff"/><circle cx="74" cy="57" r="5" fill="${K}"/><circle cx="75.7" cy="55.2" r="1.7" fill="#fff"/>`;
+  }
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <path d="M26 80 L6 90 L12 95 L7 104 L34 92Z" fill="${D}"/>
+  <path d="M50 106 v7 M46 113 h8 M70 106 v7 M66 113 h8" stroke="${O}" stroke-width="2.6" stroke-linecap="round"/>
+  <ellipse cx="60" cy="68" rx="42" ry="40" fill="${B}"/>
+  <path d="M19 62 Q20 26 60 26 Q100 26 101 62 Q86 46 60 47 Q34 46 19 62Z" fill="${D}"/>
+  <ellipse cx="60" cy="66" rx="31" ry="19" fill="${F}"/>
+  <ellipse cx="62" cy="92" rx="25" ry="15" fill="#EAD9BF"/>
+  <circle cx="33" cy="70" r="5.5" fill="${K}"/><circle cx="87" cy="70" r="5.5" fill="${K}"/>
+  <ellipse cx="60" cy="79" rx="8" ry="4.5" fill="${K}"/>
+  <ellipse cx="41" cy="66" rx="5" ry="2.8" fill="#EE9C94" opacity=".75"/><ellipse cx="79" cy="66" rx="5" ry="2.8" fill="#EE9C94" opacity=".75"/>
+  ${eyes}
+  <path d="M54.5 62 h11 l-5.5 8z" fill="${O}"/>
+  <ellipse cx="22" cy="82" rx="9" ry="16" transform="rotate(18 22 82)" fill="${D}"/>
+  <path d="M18 76 q5 3 8 9 M16 84 q5 3 7 8" stroke="${B}" stroke-width="1.6" fill="none"/>
+  <g transform="rotate(12 98 82)"><rect x="88" y="68" width="19" height="25" rx="3" fill="#FBF9F1" stroke="#2E7D5C" stroke-width="1.5"/><text x="97.5" y="87" font-size="15" text-anchor="middle" fill="#B8352A" font-weight="800" font-family="'Shippori Mincho B1',serif">中</text></g>
+  <ellipse cx="96" cy="90" rx="9" ry="7" fill="${D}"/>
+  ${fx}</svg>`;
+}
+
+// ===== カン(ライバルのカラス)とロン爺(師匠のフクロウ) =====
+function kanSVG(mood){
+  const B='#2C2F3A',S='#56607C',W='#fff',K='#0E0F14',G='#8E939E',SC='#3E8E6A';
+  let eyes='',fx='';
+  if(mood==='happy'){
+    eyes=`<path d="M39 59 q7 -8 14 0" stroke="${W}" stroke-width="3.2" fill="none" stroke-linecap="round"/><path d="M67 59 q7 -8 14 0" stroke="${W}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+    fx=`<path d="M104 24 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2z" fill="#E8C14A"/>`;
+  }else if(mood==='oops'){
+    eyes=`<circle cx="46" cy="58" r="7" fill="${W}"/><circle cx="46" cy="58" r="2.6" fill="${K}"/><circle cx="74" cy="58" r="7" fill="${W}"/><circle cx="74" cy="58" r="2.6" fill="${K}"/>`;
+    fx=`<path d="M100 28 q6 9 0 13 q-6 -4 0 -13z" fill="#7FB3E0"/>`;
+  }else if(mood==='angry'){
+    eyes=`<ellipse cx="46" cy="59" rx="6.5" ry="5.5" fill="${W}"/><circle cx="47" cy="60" r="3.2" fill="${K}"/><ellipse cx="74" cy="59" rx="6.5" ry="5.5" fill="${W}"/><circle cx="73" cy="60" r="3.2" fill="${K}"/><path d="M36 48 L55 54 M84 48 L65 54" stroke="${W}" stroke-width="3" stroke-linecap="round"/>`;
+  }else{
+    eyes=`<ellipse cx="46" cy="59" rx="6.5" ry="5.5" fill="${W}"/><circle cx="48" cy="60" r="3.3" fill="${K}"/><ellipse cx="74" cy="59" rx="6.5" ry="5.5" fill="${W}"/><circle cx="76" cy="60" r="3.3" fill="${K}"/><path d="M38 54.5 h16 M66 54.5 h16" stroke="${B}" stroke-width="4" stroke-linecap="round"/>`;
+  }
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <path d="M94 80 L114 90 L108 95 L113 104 L86 92Z" fill="${B}"/>
+  <path d="M50 106 v7 M46 113 h8 M70 106 v7 M66 113 h8" stroke="${G}" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M50 32 L55 10 L61 28 L70 12 L69 32Z" fill="${B}"/>
+  <ellipse cx="60" cy="68" rx="42" ry="40" fill="${B}"/>
+  <path d="M30 44 Q44 30 64 31" stroke="${S}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
+  <ellipse cx="62" cy="94" rx="24" ry="13" fill="#3A3F4D"/>
+  ${eyes}
+  <path d="M51 64 h18 l-9 13z" fill="${G}"/><path d="M51 64 h18" stroke="#6D727C" stroke-width="1.2"/>
+  <path d="M28 80 q32 13 64 0 v8 q-32 13 -64 0z" fill="${SC}"/><path d="M78 88 l10 16 l-8 1 l-8 -14z" fill="${SC}"/>
+  <g transform="rotate(-12 22 82)"><rect x="12" y="68" width="19" height="25" rx="3" fill="#FBF9F1" stroke="#2E7D5C" stroke-width="1.5"/><text x="21.5" y="87" font-size="14" text-anchor="middle" fill="#2B7A4B" font-weight="800" font-family="'Shippori Mincho B1',serif">發</text></g>
+  <ellipse cx="24" cy="90" rx="9" ry="7" fill="${B}"/>
+  ${fx}</svg>`;
+}
+function ronSVG(mood){
+  const B='#8C7A62',D='#5E4F3C',F='#F1E7D3',K='#2B211B',Y='#D9A441';
+  let eyes='',brows=`<path d="M33 43 q11 -7 22 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M65 43 q11 -7 22 0" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>`,fx='';
+  if(mood==='happy'){
+    eyes=`<path d="M40 59 q6 -6 12 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M68 59 q6 -6 12 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    fx=`<path d="M104 26 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2z" fill="#E8C14A"/>`;
+  }else if(mood==='stern'){
+    eyes=`<circle cx="46" cy="58" r="4.5" fill="${K}"/><circle cx="74" cy="58" r="4.5" fill="${K}"/>`;
+    brows=`<path d="M34 41 L55 48 M86 41 L65 48" stroke="#fff" stroke-width="4" stroke-linecap="round"/>`;
+  }else if(mood==='think'){
+    eyes=`<circle cx="46" cy="58" r="4.5" fill="${K}"/><circle cx="47.4" cy="56.6" r="1.5" fill="#fff"/><path d="M69 58 h10" stroke="${K}" stroke-width="3" stroke-linecap="round"/>`;
+    fx=`<circle cx="106" cy="30" r="2.5" fill="currentColor" opacity=".35"/><circle cx="112" cy="20" r="3.5" fill="currentColor" opacity=".35"/>`;
+  }else{
+    eyes=`<circle cx="46" cy="58" r="5" fill="${K}"/><circle cx="47.6" cy="56.4" r="1.7" fill="#fff"/><circle cx="74" cy="58" r="5" fill="${K}"/><circle cx="75.6" cy="56.4" r="1.7" fill="#fff"/>`;
+  }
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <path d="M50 106 v7 M46 113 h8 M70 106 v7 M66 113 h8" stroke="${Y}" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M26 38 L32 14 L46 32Z" fill="${D}"/><path d="M94 38 L88 14 L74 32Z" fill="${D}"/>
+  <ellipse cx="60" cy="70" rx="40" ry="42" fill="${B}"/>
+  <ellipse cx="60" cy="94" rx="25" ry="18" fill="#D8C8AA"/>
+  <path d="M50 88 l4 4 l4 -4 M62 88 l4 4 l4 -4 M56 98 l4 4 l4 -4" stroke="${D}" stroke-width="1.6" fill="none"/>
+  <ellipse cx="22" cy="78" rx="9" ry="18" transform="rotate(12 22 78)" fill="${D}"/><ellipse cx="98" cy="78" rx="9" ry="18" transform="rotate(-12 98 78)" fill="${D}"/>
+  <ellipse cx="46" cy="58" rx="15" ry="14" fill="${F}"/><ellipse cx="74" cy="58" rx="15" ry="14" fill="${F}"/>
+  ${eyes}
+  <circle cx="46" cy="58" r="11" fill="none" stroke="${Y}" stroke-width="2"/><circle cx="74" cy="58" r="11" fill="none" stroke="${Y}" stroke-width="2"/><path d="M57 58 h6" stroke="${Y}" stroke-width="2"/>
+  ${brows}
+  <path d="M53 74 q7 14 14 0z" fill="#fff"/>
+  <path d="M56 66 h8 l-4 9z" fill="${Y}"/>
+  ${fx}</svg>`;
+}
+function charSVG(who,mood){return who==='kan'?kanSVG(mood):who==='ron'?ronSVG(mood):chunSVG(mood);}
+
+// ===== 翻訳 =====
+const I18N={
+ja:{
+ docTitle:"雀学 麻雀を基礎から",brandSub:"",
+ heroSay:"ボクはチュン。麻雀の「雀」、スズメだチュン！牌の名前から何切るまで、いっしょに覚えよう。",chunAria:"チュンに話しかける",
+ tabLearn:"牌を知る",tabYaku:"役一覧",tabWait:"待ち当て",tabNani:"何切る",tabTrivia:"豆知識",
+ learnH:"アガリの基本形",learnGuide:"14枚を「3枚の組×4つ＋同じ牌2枚×1つ」にそろえるとアガリ。3枚の組を面子(メンツ)、2枚の組を雀頭(ジャントウ)と言うチュン。",
+ shuntsu:"順子(シュンツ)",shuntsuD:"同じ種類の連続した3枚",koutsu:"刻子(コーツ)",koutsuD:"同じ牌3枚",jantou:"雀頭(ジャントウ)",jantouD:"同じ牌2枚",
+ basicNote:"この3つを組み合わせたアガリの形の例",nameH:"名前クイズ",nextTile:"次の牌",
+ typesH:"牌の種類",typesLead:"数牌3種類×9枚と字牌7枚、計34種。各4枚ずつで136枚。",
+ groups:[["萬子(マンズ)","漢数字と「萬」の字。"],["筒子(ピンズ)","丸の数がそのまま数字。"],["索子(ソーズ)","竹の本数が数字。1だけは鳥や一本の竹で描かれることが多い。"],["字牌(ジハイ)","風牌の東南西北と、三元牌の白發中。数字がないので順子は作れない。"]],
+ yakuH:"役一覧",yakuGuide:"アガリには最低1つ役が必要だチュン。最初はリーチ・タンヤオ・役牌の3つを覚えればOK。翻数が多いほど点数アップ！",all:"すべて",
+ waitH:"待ち当て",waitGuide:"この13枚、何でアガれるかな？待ちは1つとは限らないよ。全部見つけてチュン。",modeChin:"清一色形(1種類)",modeMix:"混合",
+ tapNote:"待ちだと思う牌をタップ(複数可)",check:"答え合わせ",next:"次の問題",
+ waitFoot:"手牌で4枚使い切っている牌は待ちに数えません。七対子の形も判定に含みます。",
+ naniH:"何切る",naniGuide:"14枚から1枚切るよ。向聴数を下げずに、有効牌の残り枚数がいちばん多くなる打牌が正解だチュン。",
+ naniFoot:"判定は一般形と七対子の受け入れ枚数のみで行います。役や打点、場況は考慮しないので、実戦では手役を優先する場面もあります。",
+ making:"手牌を作っています…",naniInfo:"{s}。受け入れが最も広くなる牌を切ってください。",
+ triviaH:"ローカルルールと豆知識",triviaGuide:"ボクが集めたネタ帳だよ。卓や地域、国で変わるルールや、話のタネになる小ネタがいっぱいだチュン。",
+ triviaFoot:"ローカルルールの有無や点数は店・グループごとに異なります。遊ぶ前に確認しましょう。由来や語源には諸説あるものも含みます。",
+ drawAgain:"もう1枚引く",notebook:"チュンのネタ帳：{c}",
+ stat:"{ok} / {n} 正解",statNone:"まだ解いていません",
+ ok:["正解！その調子だチュン","お見事！","いいね、雀士の素質ありだチュン","バッチリ！"],
+ ng:["おっと、惜しい！","ドンマイ、次いこうチュン","ここは間違えやすいんだ","大丈夫、ボクも最初はそうだった"],
+ streak:"{n}連続正解！ノッてるチュン",nameSelf:"それ、ボクの名前の牌だチュン！",nameOk:"{l}は「{n}」。",nameNg:"正解は {n}({l})だよ。",
+ waitRes:"待ちは {w} の{n}種。下でアガリの形を確かめてね。",waitMissed:"まだ隠れてる待ちがあったチュン！",winWith:"でアガリ",
+ naniRes:"{t}切りは{s}・受け入れ{n}枚。最善は{b}切りで{m}枚です。",naniHint:"下の表で受け入れを比べてみようチュン",
+ thDiscard:"打牌",thShanten:"向聴数",thUke:"受け入れ",thTiles:"有効牌",ukeCell:"{k}種 {n}枚",tenpai:"聴牌",shanten:"{s}向聴",sep:"・",
+ tips:["字牌は順子にならないから、ひとつだけ浮いていたら切りやすいチュン。","ドラは表示牌の「次」の牌。表示牌が9なら1がドラだよ。","フリテンに注意！自分が捨てた牌では、待ちに入っていてもロンできないチュン。","リーチは鳴いていない手でしかかけられないよ。","両面待ちは受け入れ8枚。嵌張や辺張は4枚だから、両面の強さは2倍だチュン。","赤い5はそれだけでドラ1。見落とさないでね。","ボクの名前は中(チュン)から。スズメの鳴き声…でもあるけどね。","相手がすでに捨てた牌は、その相手には当たらない安全牌だチュン。"],
+ cond:{closed:"門前のみ",open:"鳴きOK",openRule:"鳴きOK(ルールによる)",open1:"鳴くと1翻",open2:"鳴くと2翻",open5:"鳴くと5翻"},
+ han:{"1":"1翻","2":"2翻","3":"3翻","6":"6翻",ym:"役満"},
+ cats:{local:"ローカル役",rules:"ルールの違い",abort:"途中流局",world:"世界の麻雀",words:"言葉の由来",misc:"雑学"},
+ freq:{a:"よく見る",b:"たまに見る",c:"珍しい"},
+ honorLabel:["東","南","西","北","白","發","中"],
+},
+en:{
+ docTitle:"Jangaku: Learn Riichi Mahjong",brandSub:"Jangaku",
+ heroSay:"Hi, I'm Chun! Mahjong is written 麻雀 in Japanese, and 雀 means sparrow. That's me! Let's learn everything from tile names to discards.",chunAria:"Talk to Chun",
+ tabLearn:"Tiles",tabYaku:"Yaku",tabWait:"Waits",tabNani:"Discard",tabTrivia:"Trivia",
+ learnH:"The winning hand",learnGuide:"The winning shape is simple: 14 tiles made of 4 melds and 1 pair. A meld is either a sequence or a triplet. Chirp!",
+ shuntsu:"Sequence (shuntsu)",shuntsuD:"Three in a row, same suit",koutsu:"Triplet (koutsu)",koutsuD:"Three identical tiles",jantou:"Pair (jantou)",jantouD:"Two identical tiles",
+ basicNote:"A winning hand combining all three",nameH:"Name quiz",nextTile:"Next tile",
+ typesH:"Tile types",typesLead:"Three suits numbered 1 to 9, plus 7 honors: 34 kinds, four of each, 136 tiles.",
+ groups:[["Man (Characters)","Chinese numerals above the character 萬 (ten thousand)."],["Pin (Circles)","Count the circles."],["Sou (Bamboo)","Count the sticks. The 1 is often drawn as a bird."],["Honors","The winds East, South, West, North and the White, Green and Red dragons. No numbers, so they can't form sequences."]],
+ yakuH:"Yaku list",yakuGuide:"You need at least one yaku to win. Start with riichi, tanyao and yakuhai. More han means more points!",all:"All",
+ waitH:"Find the waits",waitGuide:"Which tiles complete these 13? There may be more than one. Find them all!",modeChin:"One suit (chinitsu)",modeMix:"Mixed",
+ tapNote:"Tap every tile you think wins (multiple OK)",check:"Check",next:"Next",
+ waitFoot:"Tiles you already hold all four of don't count as waits. Seven pairs shapes are included.",
+ naniH:"What to discard?",naniGuide:"Discard one of these 14. The best discard keeps your shanten and leaves the most useful tiles to draw.",
+ naniFoot:"Judged only by tile acceptance for standard hands and seven pairs. Yaku, hand value and table situation aren't considered, so in real games you may play differently.",
+ making:"Dealing a hand…",naniInfo:"{s}. Discard the tile that gives the widest acceptance.",
+ triviaH:"House rules & trivia",triviaGuide:"Here's my notebook! Rules that change by table, region and country, plus fun facts to share. Chirp!",
+ triviaFoot:"House rules and scoring vary by parlor and group, so check before you play. Some origins have more than one theory.",
+ drawAgain:"Draw another",notebook:"Chun's notebook: {c}",
+ stat:"{ok} / {n} correct",statNone:"Not played yet",
+ ok:["Correct! Keep it up!","Nice one!","You've got real talent. Chirp!","Spot on!"],
+ ng:["Oops, so close!","No worries, next one!","This one trips a lot of people up.","It's okay, I made that mistake too!"],
+ streak:"{n} in a row! You're on fire! Chirp!",nameSelf:"That's my tile! Chun!",nameOk:"That's {n}.",nameNg:"It's {n}.",
+ waitRes:"The waits are {w}: {n} kinds. Check the winning shapes below.",waitMissed:"There was another wait hiding!",winWith:"wins",
+ naniRes:"Discarding {t}: {s}, {n} tiles accepted. Best is {b} with {m} tiles.",naniHint:"Compare acceptance in the table below.",
+ thDiscard:"Discard",thShanten:"Shanten",thUke:"Acceptance",thTiles:"Useful tiles",ukeCell:"{k} kinds, {n} tiles",tenpai:"Tenpai",shanten:"{s}-shanten",sep:", ",
+ tips:["Honors can't form sequences, so a lone honor is usually an easy discard. Chirp!","The dora is the tile after the indicator. If the indicator is a 9, the 1 is dora.","Watch out for furiten! You can't ron on a tile you discarded yourself, even if it's one of your waits.","You can only declare riichi with a closed hand.","A two-sided wait accepts 8 tiles; a closed or edge wait only 4. Twice as strong!","Red fives are dora all by themselves. Don't miss them!","My name comes from 中, the Red dragon, read 'chun'. It's also how sparrows chirp in Japanese!","A tile an opponent has already discarded is safe against that opponent. Chirp!"],
+ cond:{closed:"Closed hand only",open:"Can be open",openRule:"Can be open (house rules vary)",open1:"Open: 1 han",open2:"Open: 2 han",open5:"Open: 5 han"},
+ han:{"1":"1 han","2":"2 han","3":"3 han","6":"6 han",ym:"Yakuman"},
+ cats:{local:"House yaku",rules:"Rule variations",abort:"Abortive draws",world:"Mahjong worldwide",words:"Word origins",misc:"Fun facts"},
+ freq:{a:"Common",b:"Sometimes",c:"Rare"},
+ honorLabel:["East","South","West","North","White","Green","Red"],
+ honorName:["East wind","South wind","West wind","North wind","White dragon (Haku)","Green dragon (Hatsu)","Red dragon (Chun)"],
+},
+es:{
+ docTitle:"Jangaku: aprende mahjong riichi",brandSub:"Jangaku",
+ heroSay:"¡Hola, soy Chun! En japonés mahjong se escribe 麻雀, y 雀 significa gorrión. ¡Ese soy yo! Aprendamos desde los nombres de las fichas hasta los descartes.",chunAria:"Hablar con Chun",
+ tabLearn:"Fichas",tabYaku:"Yaku",tabWait:"Esperas",tabNani:"Descarte",tabTrivia:"Cultura",
+ learnH:"La mano ganadora",learnGuide:"La forma ganadora es sencilla: 14 fichas en 4 grupos y 1 pareja. Un grupo es una escalera o un trío. ¡Pío!",
+ shuntsu:"Escalera (shuntsu)",shuntsuD:"Tres seguidas del mismo palo",koutsu:"Trío (koutsu)",koutsuD:"Tres fichas iguales",jantou:"Pareja (jantou)",jantouD:"Dos fichas iguales",
+ basicNote:"Una mano ganadora que combina las tres",nameH:"Adivina la ficha",nextTile:"Siguiente ficha",
+ typesH:"Tipos de fichas",typesLead:"Tres palos del 1 al 9 más 7 honores: 34 tipos, cuatro de cada uno, 136 fichas.",
+ groups:[["Man (caracteres)","Números chinos sobre el carácter 萬 (diez mil)."],["Pin (círculos)","Cuenta los círculos."],["Sou (bambú)","Cuenta los palos. El 1 suele dibujarse como un pájaro."],["Honores","Los vientos Este, Sur, Oeste y Norte y los dragones blanco, verde y rojo. No tienen número, así que no forman escaleras."]],
+ yakuH:"Lista de yaku",yakuGuide:"Necesitas al menos un yaku para ganar. Empieza con riichi, tanyao y yakuhai. ¡Más han, más puntos!",all:"Todos",
+ waitH:"Encuentra las esperas",waitGuide:"¿Qué fichas completan estas 13? Puede haber más de una. ¡Encuéntralas todas!",modeChin:"Un palo (chinitsu)",modeMix:"Mixto",
+ tapNote:"Toca todas las fichas que creas que ganan (puedes elegir varias)",check:"Comprobar",next:"Siguiente",
+ waitFoot:"Las fichas de las que ya tienes las cuatro no cuentan como espera. Se incluyen las formas de siete parejas.",
+ naniH:"¿Qué descarto?",naniGuide:"Descarta una de estas 14. El mejor descarte mantiene el shanten y deja más fichas útiles por robar.",
+ naniFoot:"Se evalúa solo por la aceptación de fichas en manos normales y siete parejas. No se consideran yaku, valor ni situación de la mesa, así que en una partida real podrías jugar distinto.",
+ making:"Repartiendo una mano…",naniInfo:"{s}. Descarta la ficha que deje la mayor aceptación.",
+ triviaH:"Reglas locales y curiosidades",triviaGuide:"¡Mi libreta de datos! Reglas que cambian según la mesa, la región y el país, y curiosidades para compartir. ¡Pío!",
+ triviaFoot:"Las reglas locales y la puntuación cambian según el local o el grupo; confírmalas antes de jugar. Algunos orígenes tienen varias teorías.",
+ drawAgain:"Otra más",notebook:"Libreta de Chun: {c}",
+ stat:"{ok} / {n} aciertos",statNone:"Aún sin jugar",
+ ok:["¡Correcto! ¡Sigue así!","¡Muy bien!","Tienes madera de jugador. ¡Pío!","¡Exacto!"],
+ ng:["¡Uy, casi!","Tranquilo, ¡a por la siguiente!","Esta confunde a mucha gente.","¡No pasa nada, a mí también me pasó!"],
+ streak:"¡{n} seguidas! ¡Estás que ardes! ¡Pío!",nameSelf:"¡Esa es mi ficha! ¡Chun!",nameOk:"Es {n}.",nameNg:"Es {n}.",
+ waitRes:"Las esperas son {w}: {n} tipos. Mira abajo las formas ganadoras.",waitMissed:"¡Había otra espera escondida!",winWith:"gana",
+ naniRes:"Descartar {t}: {s}, {n} fichas útiles. Lo mejor es {b} con {m} fichas.",naniHint:"Compara la aceptación en la tabla de abajo.",
+ thDiscard:"Descarte",thShanten:"Shanten",thUke:"Aceptación",thTiles:"Fichas útiles",ukeCell:"{k} tipos, {n} fichas",tenpai:"Tenpai",shanten:"{s}-shanten",sep:", ",
+ tips:["Los honores no forman escaleras, así que un honor suelto suele ser fácil de descartar. ¡Pío!","El dora es la ficha siguiente al indicador. Si el indicador es un 9, el dora es el 1.","¡Cuidado con el furiten! No puedes hacer ron con una ficha que tú mismo descartaste, aunque sea una de tus esperas.","Solo puedes declarar riichi con la mano cerrada.","Una espera de dos lados acepta 8 fichas; una cerrada o de borde, solo 4. ¡El doble de fuerte!","Los cincos rojos son dora por sí solos. ¡No los pases por alto!","Mi nombre viene de 中, el dragón rojo, que se lee 'chun'. ¡Y así pían los gorriones en japonés!","Una ficha que un rival ya descartó es segura contra ese rival. ¡Pío!"],
+ cond:{closed:"Solo mano cerrada",open:"Puede ser abierta",openRule:"Puede ser abierta (según reglas)",open1:"Abierta: 1 han",open2:"Abierta: 2 han",open5:"Abierta: 5 han"},
+ han:{"1":"1 han","2":"2 han","3":"3 han","6":"6 han",ym:"Yakuman"},
+ cats:{local:"Yaku locales",rules:"Variantes de reglas",abort:"Anulaciones",world:"Mahjong en el mundo",words:"Origen de palabras",misc:"Curiosidades"},
+ freq:{a:"Común",b:"A veces",c:"Raro"},
+ honorLabel:["Este","Sur","Oeste","Norte","Blanco","Verde","Rojo"],
+ honorName:["Viento Este","Viento Sur","Viento Oeste","Viento Norte","Dragón blanco (Haku)","Dragón verde (Hatsu)","Dragón rojo (Chun)"],
+}};
+
+// 役: g=翻, c=条件, r=ローマ字, ja=[名前,読み,説明], en/es=[訳名,説明]
+const YAKU=[
+ {g:"1",c:"closed",r:"Riichi",ex:"",ja:["立直","リーチ","門前で聴牌したときに宣言する。1000点を供託する。"],en:["Ready hand","Declare when your closed hand is one tile from winning (tenpai). You put up a 1,000-point stick."],es:["Mano lista","Se declara cuando tu mano cerrada está a una ficha de ganar (tenpai). Depositas 1.000 puntos."]},
+ {g:"1",c:"closed",r:"Ippatsu",ex:"",ja:["一発","イッパツ","リーチ後、鳴きが入らずに一巡以内でアガる。"],en:["One shot","Win within one go-around after declaring riichi, with no calls in between."],es:["Un disparo","Ganar dentro de la primera vuelta tras declarar riichi, sin llamadas de por medio."]},
+ {g:"1",c:"closed",r:"Menzen tsumo",ex:"",ja:["門前清自摸和","メンゼンツモ","鳴かずに自分のツモでアガる。"],en:["Fully concealed self-draw","Win by drawing the tile yourself with a fully closed hand."],es:["Autorrobo con mano cerrada","Ganar robando tú mismo la ficha con la mano cerrada."]},
+ {g:"1",c:"openRule",r:"Tanyao",ex:"234678m345p456s88p",ja:["断么九","タンヤオ","2〜8の数牌だけで手を作る。1・9・字牌を使わない。"],en:["All simples","Use only numbered tiles 2 through 8. No 1s, 9s or honors."],es:["Todo simples","Solo fichas numeradas del 2 al 8. Sin 1, 9 ni honores."]},
+ {g:"1",c:"closed",r:"Pinfu",ex:"234678m345p456s99p",ja:["平和","ピンフ","面子がすべて順子、雀頭が役牌でなく、両面待ちでアガる。"],en:["No-points hand","All four melds are sequences, the pair isn't a value tile, and you win on a two-sided wait."],es:["Mano sin puntos","Los cuatro grupos son escaleras, la pareja no es de valor y ganas con una espera de dos lados."]},
+ {g:"1",c:"closed",r:"Iipeikou",ex:"112233m456p789s44p",ja:["一盃口","イーペーコー","同じ順子を2組そろえる。"],en:["Pure double sequence","Two identical sequences in the same suit."],es:["Doble escalera pura","Dos escaleras idénticas del mismo palo."]},
+ {g:"1",c:"open",r:"Yakuhai",ex:"555z234m678p345s11m",ja:["役牌","ヤクハイ","白・發・中、場風、自風のいずれかを刻子にする。1組ごとに1翻。"],en:["Value tiles","A triplet of a dragon, the round wind or your seat wind. 1 han each."],es:["Fichas de valor","Un trío de dragón, del viento de ronda o de tu viento de asiento. 1 han cada uno."]},
+ {g:"1",c:"open",r:"Rinshan / Haitei / Chankan",ex:"",ja:["嶺上開花 ほか","リンシャンカイホウ","カンした後の嶺上牌でアガリ(嶺上開花)。最後の牌でアガリ(海底・河底)。他家の加槓牌でアガリ(槍槓)。"],en:["Lucky timing","Win on the replacement tile after a kan (rinshan), on the very last tile (haitei/houtei), or on a tile someone adds to their kan (chankan)."],es:["Momento afortunado","Ganar con la ficha de reemplazo tras un kan (rinshan), con la última ficha (haitei/houtei) o con la ficha que otro añade a su kan (chankan)."]},
+ {g:"2",c:"closed",r:"Chiitoitsu",ex:"1133m5577p22s4466z",ja:["七対子","チートイツ","異なる7種類の対子をそろえる特殊な形。"],en:["Seven pairs","Seven different pairs. A special winning shape."],es:["Siete parejas","Siete parejas distintas. Una forma ganadora especial."]},
+ {g:"2",c:"open1",r:"Sanshoku doujun",ex:"123m123p123s789s55m",ja:["三色同順","サンショクドウジュン","萬子・筒子・索子で同じ数字の順子をそろえる。"],en:["Mixed triple sequence","The same sequence in all three suits."],es:["Triple escalera mixta","La misma escalera en los tres palos."]},
+ {g:"2",c:"open1",r:"Ittsu",ex:"123456789m234p55s",ja:["一気通貫","イッキツウカン","同じ種類で123・456・789をそろえる。"],en:["Pure straight","1-2-3, 4-5-6 and 7-8-9 in one suit."],es:["Escalera pura","1-2-3, 4-5-6 y 7-8-9 del mismo palo."]},
+ {g:"2",c:"open1",r:"Chanta",ex:"123m789p999s111z99m",ja:["混全帯么九","チャンタ","すべての面子と雀頭に1・9・字牌を含める。"],en:["Half outside hand","Every meld and the pair include a terminal (1 or 9) or an honor."],es:["Mano exterior mixta","Cada grupo y la pareja contienen un terminal (1 o 9) o un honor."]},
+ {g:"2",c:"open",r:"Toitoi",ex:"222m555p888s777z33z",ja:["対々和","トイトイ","4面子をすべて刻子(または槓子)にする。"],en:["All triplets","All four melds are triplets (or quads)."],es:["Todo tríos","Los cuatro grupos son tríos (o cuartetos)."]},
+ {g:"2",c:"open",r:"Sanankou",ex:"222m444p666s789m11z",ja:["三暗刻","サンアンコー","鳴かずに作った刻子を3組持つ。"],en:["Three concealed triplets","Three triplets formed without calling."],es:["Tres tríos ocultos","Tres tríos formados sin llamar."]},
+ {g:"2",c:"open",r:"Sanshoku doukou",ex:"333m333p333s789s55m",ja:["三色同刻","サンショクドウコー","萬子・筒子・索子で同じ数字の刻子をそろえる。"],en:["Triple triplets","Triplets of the same number in all three suits."],es:["Triple trío","Tríos del mismo número en los tres palos."]},
+ {g:"2",c:"open",r:"Honroutou",ex:"111m999p111s222z55z",ja:["混老頭","ホンロウトウ","1・9・字牌だけで手を作る。"],en:["All terminals and honors","Only 1s, 9s and honors."],es:["Todo terminales y honores","Solo unos, nueves y honores."]},
+ {g:"2",c:"open",r:"Shousangen",ex:"555z666z77z234m789p",ja:["小三元","ショウサンゲン","白・發・中のうち2つを刻子、1つを雀頭にする。役牌2つと合わせて実質4翻。"],en:["Little three dragons","Two dragon triplets and a dragon pair. With the two yakuhai it's effectively 4 han."],es:["Tres dragones menores","Dos tríos de dragones y una pareja de dragón. Con los dos yakuhai suma en la práctica 4 han."]},
+ {g:"2",c:"closed",r:"Double riichi",ex:"",ja:["ダブル立直","ダブルリーチ","最初の打牌でリーチする。"],en:["Double ready","Declare riichi on your very first discard."],es:["Riichi doble","Declarar riichi en tu primer descarte."]},
+ {g:"3",c:"open2",r:"Honitsu",ex:"123345678m111z22z",ja:["混一色","ホンイツ","1種類の数牌と字牌だけで手を作る。"],en:["Half flush","One suit plus honors only."],es:["Color mixto","Un solo palo más honores."]},
+ {g:"3",c:"open2",r:"Junchan",ex:"123789m123p999s11s",ja:["純全帯么九","ジュンチャン","すべての面子と雀頭に1か9を含める。字牌は使わない。"],en:["Fully outside hand","Every meld and the pair include a 1 or 9. No honors."],es:["Mano exterior pura","Cada grupo y la pareja contienen un 1 o un 9. Sin honores."]},
+ {g:"3",c:"closed",r:"Ryanpeikou",ex:"112233m778899p55s",ja:["二盃口","リャンペーコー","一盃口を2組作る。"],en:["Twice pure double sequence","Two sets of iipeikou."],es:["Doble doble escalera","Dos veces iipeikou."]},
+ {g:"6",c:"open5",r:"Chinitsu",ex:"123234567888m55m",ja:["清一色","チンイツ","1種類の数牌だけで手を作る。"],en:["Full flush","A single suit only."],es:["Color puro","Un solo palo."]},
+ {g:"ym",c:"closed",r:"Kokushi musou",ex:"119m19p19s1234567z",ja:["国士無双","コクシムソウ","13種類の么九牌を1枚ずつそろえ、どれか1つを対子にする。"],en:["Thirteen orphans","One of each of the 13 terminals and honors, plus one duplicate."],es:["Trece huérfanos","Una de cada una de las 13 terminales y honores, más una repetida."]},
+ {g:"ym",c:"closed",r:"Suuankou",ex:"111m333p555s777s22z",ja:["四暗刻","スーアンコー","鳴かずに刻子を4組作る。"],en:["Four concealed triplets","Four triplets formed without calling."],es:["Cuatro tríos ocultos","Cuatro tríos formados sin llamar."]},
+ {g:"ym",c:"open",r:"Daisangen",ex:"555z666z777z234m11p",ja:["大三元","ダイサンゲン","白・發・中をすべて刻子にする。"],en:["Big three dragons","Triplets of all three dragons."],es:["Tres grandes dragones","Tríos de los tres dragones."]},
+ {g:"ym",c:"open",r:"Tsuuiisou",ex:"111z222z333z555z77z",ja:["字一色","ツーイーソー","字牌だけで手を作る。"],en:["All honors","Honors only."],es:["Todo honores","Solo honores."]},
+ {g:"ym",c:"open",r:"Ryuuiisou",ex:"234234666888s66z",ja:["緑一色","リューイーソー","索子の2・3・4・6・8と發だけで手を作る。"],en:["All green","Only 2, 3, 4, 6, 8 of bamboo and the Green dragon."],es:["Todo verde","Solo 2, 3, 4, 6 y 8 de bambú y el dragón verde."]},
+ {g:"ym",c:"open",r:"Shousuushii",ex:"111z222z333z44z123m",ja:["小四喜","ショウスーシー","東南西北のうち3つを刻子、1つを雀頭にする。"],en:["Little four winds","Three wind triplets and a wind pair."],es:["Cuatro vientos menores","Tres tríos de vientos y una pareja de viento."]},
+ {g:"ym",c:"open",r:"Daisuushii",ex:"111z222z333z444z11m",ja:["大四喜","ダイスーシー","東南西北をすべて刻子にする。ダブル役満とするルールも多い。"],en:["Big four winds","Triplets of all four winds. Often counted as double yakuman."],es:["Cuatro grandes vientos","Tríos de los cuatro vientos. A menudo cuenta como doble yakuman."]},
+ {g:"ym",c:"open",r:"Chinroutou",ex:"111m999m111p999s11s",ja:["清老頭","チンロウトウ","1と9の数牌だけで手を作る。"],en:["All terminals","Only 1s and 9s."],es:["Todo terminales","Solo unos y nueves."]},
+ {g:"ym",c:"closed",r:"Chuuren poutou",ex:"1112345678999m5m",ja:["九蓮宝燈","チューレンポウトウ","1種類の数牌で1112345678999の形に同じ種類の牌を1枚加える。"],en:["Nine gates","1112345678999 in one suit, plus any tile of that suit."],es:["Nueve puertas","1112345678999 de un palo más cualquier ficha del mismo palo."]},
+ {g:"ym",c:"closed",r:"Tenhou / Chiihou",ex:"",ja:["天和・地和","テンホー・チーホー","親の配牌でアガリ(天和)。子の最初のツモでアガリ(地和)。"],en:["Blessing of heaven / earth","The dealer wins with the starting hand (tenhou), or a non-dealer wins on their first draw (chiihou)."],es:["Bendición del cielo / tierra","El repartidor gana con la mano inicial (tenhou) o un no repartidor gana con su primer robo (chiihou)."]},
+];
+
+// 豆知識: c=カテゴリ, f=頻度, ja/en/es=[見出し,本文]
+const TV=[
+ {c:"local",f:"b",ja:["人和(レンホー)","子が自分の最初のツモより前に、他家の捨て牌でロンでアガること。満貫とするルールと役満とするルールがあり、採用しない卓もある。"],en:["Renhou (Blessing of man)","A non-dealer wins by ron before their first draw. Counted as mangan or yakuman depending on the table, and some tables don't use it."],es:["Renhou (bendición del hombre)","Un no repartidor gana por ron antes de su primer robo. Vale mangan o yakuman según la mesa, y algunas no lo usan."]},
+ {c:"local",f:"b",ex:"22334455667788p",ja:["大車輪(ダイシャリン)","2〜8の筒子を2枚ずつそろえた七対子。丸い牌が並ぶ様子を車輪に見立てた役満。"],en:["Daisharin (Big wheels)","Seven pairs of 2 to 8 of circles. The rows of round tiles look like wheels. Yakuman."],es:["Daisharin (grandes ruedas)","Siete parejas del 2 al 8 de círculos. Las fichas redondas parecen ruedas. Yakuman."]},
+ {c:"local",f:"c",ja:["十三不塔(シーサンプーター)","配牌とツモの14枚で、面子も搭子もなく、対子が1つだけの状態。バラバラすぎて逆に役になる。満貫または役満扱い。"],en:["Shiisanpuutaa (Thirteen unconnected)","Your first 14 tiles have no melds and no partial sets, only one pair. So scattered it becomes a yaku: mangan or yakuman."],es:["Shiisanpuutaa (trece desconectadas)","Tus primeras 14 fichas no tienen grupos ni esperas parciales, solo una pareja. Tan dispersa que se vuelve yaku: mangan o yakuman."]},
+ {c:"local",f:"c",ja:["石の上にも三年","ダブル立直をかけて、最後の牌(海底・河底)でアガること。辛抱が実った役満。"],en:["Three years on a rock","Declare double riichi and win on the very last tile. A yakuman for patience, named after a Japanese proverb about perseverance."],es:["Tres años sobre una roca","Declarar riichi doble y ganar con la última ficha. Un yakuman a la paciencia, con el nombre de un proverbio japonés sobre la perseverancia."]},
+ {c:"local",f:"c",ex:"11223344556677z",ja:["大七星(ダイチーシン)","字牌7種を2枚ずつそろえた七対子。字一色に含まれるが、ダブル役満とする卓もある。"],en:["Daichisei (Big seven stars)","Seven pairs of all seven honors. It's already all honors, but some tables count it as double yakuman."],es:["Daichisei (siete grandes estrellas)","Siete parejas con los siete honores. Ya es todo honores, pero algunas mesas lo cuentan como doble yakuman."]},
+ {c:"local",f:"b",ja:["八連荘(パーレンチャン)","親が8回連続でアガると、8回目は役がなくても役満になる。"],en:["Paarenchan (Eight in a row)","If the dealer wins eight times in a row, the eighth win is yakuman even without another yaku."],es:["Paarenchan (ocho seguidas)","Si el repartidor gana ocho veces seguidas, la octava es yakuman aunque no tenga otro yaku."]},
+ {c:"local",f:"c",ex:"111555777s999s77z",ja:["紅孔雀(ベニクジャク)","索子の1・5・7・9と中だけで作る役満。赤い部分がある牌だけで作る、緑一色の対になる役。"],en:["Benikujaku (Red peacock)","Only 1, 5, 7, 9 of bamboo and the Red dragon: the tiles with red on them. A counterpart to all green."],es:["Benikujaku (pavo real rojo)","Solo 1, 5, 7 y 9 de bambú y el dragón rojo: las fichas con rojo. La contraparte del todo verde."]},
+ {c:"rules",f:"a",ja:["喰いタン","鳴いた断么九を認めるかどうか。認めるルールを「アリ」と呼び、現在の雀荘やネット麻雀はほとんどがアリ。"],en:["Kuitan (Open tanyao)","Whether tanyao counts with called tiles. Tables that allow it are called 'ari', and almost all parlors and online games do."],es:["Kuitan (tanyao abierto)","Si el tanyao vale con fichas llamadas. Las mesas que lo permiten se llaman 'ari', y casi todos los salones y juegos en línea lo hacen."]},
+ {c:"rules",f:"a",ja:["後付け(あとづけ)","役が確定していない状態で鳴き、あとから役を付けてアガること。認めない「完先(かんさき)」ルールも一部に残る。"],en:["Atozuke (Yaku later)","Calling tiles before your hand has a yaku, and completing the yaku later. Some tables ban it (the 'kansaki' rule)."],es:["Atozuke (yaku después)","Llamar fichas antes de tener yaku y completarlo después. Algunas mesas lo prohíben (regla 'kansaki')."]},
+ {c:"rules",f:"a",ex:"5m5p5s",ja:["赤ドラ","五萬・五筒・五索のうち各1枚を赤く塗り、持っているだけでドラ1になる。枚数を増やしたり、金色のドラを入れたりする場所もある。"],en:["Red fives","One 5 of each suit is painted red and counts as a dora. Some places add more red tiles, or even gold ones."],es:["Cincos rojos","Un 5 de cada palo se pinta de rojo y cuenta como dora. En algunos lugares añaden más rojas, o incluso doradas."]},
+ {c:"rules",f:"b",ja:["焼き鳥","半荘の間に一度もアガれなかった人が罰符を払う。アガると鳥のマークを裏返して「焼き鳥」を解除する。"],en:["Yakitori (Grilled chicken)","A player who never wins during the game pays a penalty. Winning flips your bird marker over, 'grilling' it."],es:["Yakitori (pollo a la parrilla)","Quien no gana ninguna mano en la partida paga una penalización. Al ganar, das la vuelta a tu marcador de pájaro y lo 'asas'."]},
+ {c:"rules",f:"b",ja:["ワレメ","サイコロで決まった牌山の切れ目の位置にいる人は、その局の支払いと受け取りが倍になる。"],en:["Wareme (The split)","The player at the gap in the wall chosen by the dice pays and receives double that hand."],es:["Wareme (la apertura)","El jugador en la apertura del muro elegida por los dados paga y cobra el doble esa mano."]},
+ {c:"rules",f:"c",ja:["白ポッチ","白に小さな印が付いた牌を1枚入れ、立直後にツモると好きな牌として使える。"],en:["Shiro pocchi (Dotted white)","A White dragon with a small dot acts as a wild tile if you draw it after riichi."],es:["Shiro pocchi (blanco con punto)","Un dragón blanco con un pequeño punto funciona como comodín si lo robas tras declarar riichi."]},
+ {c:"rules",f:"b",ja:["ご祝儀(チップ)","一発・裏ドラ・赤ドラ・役満などで、点数とは別にチップを受け取るルール。フリー雀荘で多い。"],en:["Shuugi (Bonus chips)","Chips paid separately from points for ippatsu, ura dora, red fives, yakuman and so on. Common in parlors."],es:["Shuugi (fichas de bonificación)","Fichas que se pagan aparte de los puntos por ippatsu, ura dora, cincos rojos, yakuman, etc. Comunes en salones."]},
+ {c:"rules",f:"a",ja:["三人麻雀(サンマ)","3人で遊ぶ形式で、萬子の2〜8を抜いて使うのが一般的。北を抜きドラにするルールが多く、関西で特に人気がある。"],en:["Sanma (Three-player)","Usually removes the 2 to 8 of characters, and North is often set aside as a bonus dora. Especially popular in the Kansai region."],es:["Sanma (a tres)","Normalmente se quitan del 2 al 8 de caracteres y el Norte suele apartarse como dora extra. Muy popular en la región de Kansai."]},
+ {c:"abort",f:"a",ja:["九種九牌(キュウシュキュウハイ)","最初のツモの時点で么九牌が9種類以上あれば、流局を宣言できる。そのまま国士無双を狙ってもよい。"],en:["Kyuushu kyuuhai (Nine terminals)","If your first draw leaves you with 9 or more different terminals and honors, you may abort the hand. Or go for thirteen orphans!"],es:["Kyuushu kyuuhai (nueve terminales)","Si tras tu primer robo tienes 9 o más terminales y honores distintos, puedes anular la mano. ¡O ir a por trece huérfanos!"]},
+ {c:"abort",f:"a",ja:["四風連打(スーフーレンダ)","最初の1巡目で4人全員が同じ風牌を切ると流局になる。"],en:["Suufon renda (Four winds)","All four players discard the same wind on the first go-around: the hand is aborted."],es:["Suufon renda (cuatro vientos)","Los cuatro jugadores descartan el mismo viento en la primera vuelta: la mano se anula."]},
+ {c:"abort",f:"a",ja:["四家立直(スーチャリーチ)","4人全員が立直をかけると流局になる。"],en:["Suucha riichi (Four riichi)","All four players declare riichi: the hand is aborted."],es:["Suucha riichi (cuatro riichi)","Los cuatro jugadores declaran riichi: la mano se anula."]},
+ {c:"abort",f:"a",ja:["四開槓(スーカイカン)","1局で合計4回カンされ、それが2人以上によるものだと流局になる。1人で4回なら四槓子の役満を狙える。"],en:["Suukaikan (Four kans)","Four kans are made in one hand by two or more players: the hand is aborted. If one player made all four, they can go for the four-quads yakuman."],es:["Suukaikan (cuatro kans)","Se hacen cuatro kans en una mano entre dos o más jugadores: la mano se anula. Si los hizo uno solo, puede ir a por el yakuman de cuatro kans."]},
+ {c:"world",ja:["中国の公式ルール","1998年に国が定めた「国標麻雀」では役が81種類あり、合計8点以上でないとアガれない。立直やドラはない。"],en:["China's official rules","The 1998 national standard (Guobiao) has 81 scoring patterns, and you need at least 8 points to win. No riichi, no dora."],es:["Reglas oficiales de China","El estándar nacional de 1998 (Guobiao) tiene 81 patrones y necesitas al menos 8 puntos para ganar. Sin riichi ni dora."]},
+ {c:"world",ja:["花牌(はなぱい)","中国・香港・台湾などでは、春夏秋冬や梅蘭菊竹を描いた花牌8枚を加えて144枚で遊ぶことが多い。引いたら横に出して補充し、点数の加算になる。"],en:["Flower tiles","China, Hong Kong and Taiwan often add 8 flower tiles (four seasons, four plants) for 144 in total. Drawn flowers are set aside, replaced, and add to your score."],es:["Fichas de flor","En China, Hong Kong y Taiwán suelen añadirse 8 flores (estaciones y plantas) hasta 144 fichas. Se apartan, se reponen y suman puntos."]},
+ {c:"world",ja:["台湾麻雀は16枚","手牌が16枚で、5面子と1雀頭の17枚でアガる。点数は「台」で数え、親が連続でアガるとボーナスが付く。"],en:["Taiwanese mahjong uses 16 tiles","Hands have 16 tiles, and you win with 5 melds and a pair (17 tiles). Points are counted in 'tai', and a dealer's winning streak earns bonuses."],es:["El mahjong taiwanés usa 16 fichas","Las manos tienen 16 fichas y se gana con 5 grupos y una pareja (17). Los puntos se cuentan en 'tai' y las rachas del repartidor dan bonus."]},
+ {c:"world",ja:["香港麻雀","花牌ありの広東式が主流で、点数は「番」で数える。最低何番以上でアガれるかを卓ごとに決めることが多い。"],en:["Hong Kong mahjong","The Cantonese style with flowers is standard, scored in 'fan'. Tables usually set a minimum fan needed to win."],es:["Mahjong de Hong Kong","Predomina el estilo cantonés con flores y se puntúa en 'fan'. Cada mesa suele fijar un mínimo de fan para ganar."]},
+ {c:"world",ja:["アメリカ麻雀","ジョーカー牌を加えた152枚で遊ぶ。毎年発行される役のカードに載った形でしかアガれず、カードが変わるたびに攻略も変わる。"],en:["American mahjong","Played with 152 tiles including jokers. You can only win with hands printed on a card issued every year, so strategy changes with each new card."],es:["Mahjong americano","Se juega con 152 fichas, comodines incluidos. Solo se gana con manos impresas en una tarjeta que se publica cada año, así que la estrategia cambia con cada tarjeta."]},
+ {c:"world",ja:["チャールストン","アメリカ麻雀で、配牌後に不要な牌を3枚ずつ左右や対面と交換する儀式。アガリ宣言は「マージャン!」。"],en:["The Charleston","In American mahjong, players pass unwanted tiles three at a time to the right, across and left after the deal. Winners call out 'Mahjong!'"],es:["El Charleston","En el mahjong americano, tras repartir se pasan fichas de tres en tres a derecha, enfrente e izquierda. Quien gana grita '¡Mahjong!'"]},
+ {c:"world",ja:["動物牌","シンガポールやマレーシアの麻雀では、猫・ネズミ・鶏・ムカデを描いた動物牌が入る。猫とネズミがそろうとボーナスがもらえる。"],en:["Animal tiles","Singaporean and Malaysian mahjong add animal tiles: cat, rat, rooster and centipede. Getting the cat and rat together earns a bonus."],es:["Fichas de animales","En Singapur y Malasia se añaden gato, rata, gallo y ciempiés. Juntar el gato y la rata da un bonus."]},
+ {c:"world",ja:["道具の違い","日本は牌が小さめで、全自動卓と点棒が一般的。中国や台湾の牌は大きめで、手で積む卓も多い。欧米の牌には読みやすいよう隅に算用数字が入ったものが多く、アメリカでは牌を立てるラックを使う。"],en:["Equipment differences","Japan uses smaller tiles, automatic tables and point sticks. Chinese and Taiwanese tiles are larger, and many tables are shuffled by hand. Western sets often have Arabic numerals in the corners, and American players use racks to hold their tiles."],es:["Diferencias de equipo","Japón usa fichas pequeñas, mesas automáticas y palillos de puntos. En China y Taiwán las fichas son más grandes y muchas mesas se barajan a mano. Los juegos occidentales suelen llevar números arábigos en las esquinas y en EE. UU. se usan atriles."]},
+ {c:"world",ja:["捨て牌の置き方","日本では自分の前に6枚ずつきれいに並べるのが作法。中国や香港では卓の中央にまとめて置くスタイルも多く、誰が何を捨てたかを覚える力が問われる。"],en:["Where discards go","In Japan you line up your discards neatly in rows of six in front of you. In China and Hong Kong they're often tossed into the middle, so you have to remember who threw what."],es:["Dónde van los descartes","En Japón se colocan en filas ordenadas de seis frente a ti. En China y Hong Kong a menudo se tiran al centro, así que hay que recordar quién descartó qué."]},
+ {c:"world",ja:["日本のお作法","始まりと終わりに「よろしくお願いします」「ありがとうございました」とあいさつし、牌を強く打ちつけない。発声してから鳴き、アガリは手牌を倒して見せる。"],en:["Japanese etiquette","Greet with 'yoroshiku onegaishimasu' at the start and 'arigatou gozaimashita' at the end, and don't slam tiles. Announce before calling, and lay down your hand to show your win."],es:["Etiqueta japonesa","Se saluda con 'yoroshiku onegaishimasu' al empezar y 'arigatou gozaimashita' al terminar, y no se golpean las fichas. Se anuncia antes de llamar y se tumba la mano para mostrar la victoria."]},
+ {c:"world",ja:["香港の縁起担ぎ","広東語で「本(書)」は「負ける(輸)」と同じ発音なので、麻雀の席に本を持ち込むのを嫌う人がいる。旧正月は家族で麻雀を囲む定番の季節。"],en:["A Hong Kong superstition","In Cantonese, 'book' sounds like 'lose', so some players don't want books at the table. Lunar New Year is peak family mahjong season."],es:["Una superstición de Hong Kong","En cantonés, 'libro' suena como 'perder', así que algunos no quieren libros en la mesa. El Año Nuevo Lunar es la temporada estrella del mahjong en familia."]},
+ {c:"words",ja:["テンパる","「聴牌(テンパイ)」から。あと1枚でアガれるが気が気でない状態が、余裕のない様子を表す言葉として広まった。"],en:["Tenparu","From 'tenpai'. In everyday Japanese it means being flustered and out of room, like waiting nervously for that one tile."],es:["Tenparu","Viene de 'tenpai'. En japonés cotidiano significa estar agobiado, como quien espera nervioso esa única ficha."]},
+ {c:"words",ja:["安全牌","相手に当たらない牌のこと。転じて「無難な選択」や「当たり障りのない人」の意味でも使われる。"],en:["Anzenpai (Safe tile)","A tile that can't be ronned. In Japanese it also means a safe choice, or a harmless person."],es:["Anzenpai (ficha segura)","Una ficha con la que no te pueden hacer ron. En japonés también significa una opción segura o una persona inofensiva."]},
+ {c:"words",ja:["面子(メンツ)","麻雀の3枚1組を指す言葉。「メンツが足りない」のように、集まる顔ぶれの意味でも日常的に使う。"],en:["Mentsu","The word for a meld. In Japanese it also means the group of people who gather, as in 'we don't have enough mentsu'."],es:["Mentsu","La palabra para un grupo de fichas. En japonés también designa a la gente que se reúne, como en 'no tenemos suficientes mentsu'."]},
+ {c:"words",ja:["チョンボ","ルール違反のミスで罰符を払うこと。日常でも「うっかりミス」の意味で使われる。"],en:["Chombo","A rules violation that costs a penalty. In everyday Japanese it means a careless blunder."],es:["Chombo","Una infracción que se paga con penalización. En japonés cotidiano significa un descuido."]},
+ {c:"words",ja:["麻雀という名前","「雀」はスズメ。牌をかき混ぜる音がスズメのさえずりに似ているから、という説が有名だが諸説ある。"],en:["The name 'mahjong'","The second character, 雀, means sparrow. A popular theory says shuffling tiles sounds like sparrows chirping, but there are others."],es:["El nombre 'mahjong'","El segundo carácter, 雀, significa gorrión. Una teoría popular dice que barajar las fichas suena como gorriones piando, pero hay otras."]},
+ {c:"misc",ja:["立直は日本生まれ","中国の麻雀には立直がない。ドラや一発などとともに、日本で発展した独自のルール。"],en:["Riichi was born in Japan","Chinese mahjong has no riichi. Along with dora and ippatsu, it's a rule that developed in Japan."],es:["El riichi nació en Japón","El mahjong chino no tiene riichi. Junto con el dora y el ippatsu, es una regla desarrollada en Japón."]},
+ {c:"misc",ja:["1索はなぜ鳥なのか","多くの牌で1索には鳥(孔雀や雀)が描かれる。細い竹1本では見分けにくいためとも、牌の意匠の名残ともいわれ、はっきりした由来は分かっていない。"],en:["Why is the 1 of bamboo a bird?","On many sets the 1 of bamboo shows a bird, such as a peacock or sparrow. Some say a single stick was too hard to tell apart; others say it's an old design tradition. Nobody knows for sure."],es:["¿Por qué el 1 de bambú es un pájaro?","En muchos juegos el 1 de bambú muestra un pájaro, como un pavo real o un gorrión. Unos dicen que un solo palo era difícil de distinguir y otros que es una tradición de diseño. Nadie lo sabe con certeza."]},
+ {c:"misc",ja:["白は何も描かれていない","白は無地、または枠だけの牌。昔は牌をなくしたときの予備として使われたという話もある。"],en:["The White dragon is blank","The White dragon is plain or just a frame. Some say it was once used as a spare to replace lost tiles."],es:["El dragón blanco está en blanco","El dragón blanco es liso o solo tiene un marco. Se dice que antes servía de repuesto para fichas perdidas."]},
+ {c:"misc",ja:["天和の確率","親の配牌でアガっている確率は約33万分の1といわれる。一生に一度見られるかどうかの役満。"],en:["Odds of tenhou","The chance that the dealer's starting hand is already a win is said to be about 1 in 330,000. A once-in-a-lifetime yakuman."],es:["Probabilidad del tenhou","Se dice que la probabilidad de que la mano inicial del repartidor ya sea ganadora es de 1 entre 330.000. Un yakuman de una vez en la vida."]},
+ {c:"misc",ex:"1112345678999p",ja:["九蓮宝燈の迷信","「アガると運を使い果たして死ぬ」という冗談めいた言い伝えがあるほど珍しい役満。純正形は9面待ちになる。"],en:["The Nine Gates curse","So rare there's a joke that winning it uses up all your luck and you'll die. The pure form waits on nine different tiles."],es:["La maldición de las nueve puertas","Es tan raro que se bromea con que ganarlo agota tu suerte y te mueres. La forma pura espera nueve fichas distintas."]},
+ {c:"misc",ex:"19m19p19s1234567z",ja:["国士無双13面待ち","么九牌13種を1枚ずつ持った形は、13種どれでもアガれる。ダブル役満とするルールも多い。"],en:["The 13-sided thirteen orphans wait","Holding one of each of the 13 terminals and honors, any of those 13 tiles wins. Many rules count it as double yakuman."],es:["La espera de 13 lados de trece huérfanos","Con una de cada una de las 13 terminales y honores, cualquiera de esas 13 gana. Muchas reglas lo cuentan como doble yakuman."]},
+ {c:"misc",ja:["25000点持ちの30000点返し","配給原点は25000点だが、精算は30000点を基準にする。差額はトップ賞(オカ)としてトップの人に入る。"],en:["Start at 25,000, settle at 30,000","Everyone starts with 25,000 points, but final scores are measured against 30,000. The difference goes to first place as a top bonus (oka)."],es:["Empezar con 25.000, liquidar con 30.000","Todos empiezan con 25.000 puntos, pero al final se mide contra 30.000. La diferencia va al primero como bonus (oka)."]},
+];
+
+// ===== 道場とキャラクターの文言 =====
+Object.assign(I18N.ja,{
+ tabDojo:"道場",dojoH:"道場",dojoGuide:"ロン爺とカンといっしょに、会話で学ぶレッスンだよ。タップで話が進むチュン。",
+ castH:"登場キャラクター",lessonsH:"レッスン",lessonN:"レッスン{n}",done:"完了",tapNext:"タップして続ける",skip:"全部表示",back:"一覧に戻る",nextLesson:"次のレッスン",lessonDone:"レッスン完了！",lessonLink:"道場で学ぶ：{t}",
+ names:{chun:"チュン",kan:"カン",ron:"ロン爺"},
+ profiles:{chun:"麻雀を勉強中のスズメ。中の牌がお守り。",kan:"チュンのライバルのカラス。自信家で攻め好き。名前は槓(カン)とカラスの鳴き声から。",ron:"物知りなフクロウの師匠。名前はアガリの「ロン」から。どんな質問にも答えてくれる。"},
+ kanWrong:["ハッ、そんなのも分からないのか？カァー！","オレなら一発で分かったぜ。…たぶんな。"],
+ kanStreak:"チッ、やるじゃねえか。次はオレが勝つぜ。",
+ ronWait:"待ちは形に分けて探すのじゃ。両面、嵌張、単騎…と順に確かめてみよ。",
+ ronNani:"孤立牌から比べ、受け入れ枚数の表をよく見るのじゃ。",
+ ronName:"数牌は絵柄で種類を、字牌は字で覚えるとよいぞ。",
+ ronPraise:"うむ、見事じゃ。",
+});
+Object.assign(I18N.en,{
+ tabDojo:"Dojo",dojoH:"Dojo",dojoGuide:"Lessons in conversation with Grandpa Ron and Kan. Tap to move the story forward. Chirp!",
+ castH:"Characters",lessonsH:"Lessons",lessonN:"Lesson {n}",done:"Done",tapNext:"Tap to continue",skip:"Show all",back:"Back to lessons",nextLesson:"Next lesson",lessonDone:"Lesson complete!",lessonLink:"Learn in the Dojo: {t}",
+ names:{chun:"Chun",kan:"Kan",ron:"Grandpa Ron"},
+ profiles:{chun:"A sparrow learning mahjong. The Red dragon tile is its lucky charm.",kan:"Chun's rival, a crow. Confident and loves to attack. Named after 'kan' (a quad) and a crow's caw.",ron:"A wise old owl and everyone's teacher. Named after 'ron', the call for a win. Has an answer for everything."},
+ kanWrong:["Ha! You didn't get that? Caw!","I'd have gotten that instantly. ...Probably."],
+ kanStreak:"Tch, not bad. I'll win next time.",
+ ronWait:"Break the hand into shapes. Check for ryanmen, kanchan, tanki and so on, one by one.",
+ ronNani:"Compare the isolated tiles first, and study the acceptance table.",
+ ronName:"Learn the suits by their pictures, and the honors by their characters.",
+ ronPraise:"Splendid.",
+});
+Object.assign(I18N.es,{
+ tabDojo:"Dojo",dojoH:"Dojo",dojoGuide:"Lecciones conversando con el abuelo Ron y Kan. Toca para avanzar. ¡Pío!",
+ castH:"Personajes",lessonsH:"Lecciones",lessonN:"Lección {n}",done:"Hecha",tapNext:"Toca para continuar",skip:"Ver todo",back:"Volver a lecciones",nextLesson:"Siguiente lección",lessonDone:"¡Lección completada!",lessonLink:"Aprende en el Dojo: {t}",
+ names:{chun:"Chun",kan:"Kan",ron:"Abuelo Ron"},
+ profiles:{chun:"Un gorrión que aprende mahjong. La ficha del dragón rojo es su amuleto.",kan:"El rival de Chun, un cuervo. Seguro de sí mismo y muy ofensivo. Su nombre viene de 'kan' (un cuarteto) y del graznido del cuervo.",ron:"Un búho sabio, maestro de todos. Su nombre viene de 'ron', la llamada para ganar. Tiene respuesta para todo."},
+ kanWrong:["¡Ja! ¿No lo sabías? ¡Cra!","Yo lo habría sacado al instante. ...Creo."],
+ kanStreak:"Bah, nada mal. La próxima gano yo.",
+ ronWait:"Divide la mano en formas. Busca ryanmen, kanchan, tanki y demás, una por una.",
+ ronNani:"Compara primero las fichas aisladas y estudia la tabla de aceptación.",
+ ronName:"Aprende los palos por sus dibujos y los honores por sus caracteres.",
+ ronPraise:"Espléndido.",
+});
+
+// s=話し手, m=表情, t=牌, w=待ち・注目牌
+const LESSONS=[
+{id:"game",title:{ja:["麻雀ってどんなゲーム？","人数・勝ち方・戦い方"],en:["What is mahjong?","Players, winning and strategy"],es:["¿Qué es el mahjong?","Jugadores, cómo ganar y estrategia"]},nextTab:"learn",lines:[
+ {s:"chun",m:"happy",ja:"ボク、麻雀をやってみたいんだけど、どんなゲームなのか全然わからないチュン。",en:"I want to try mahjong, but I have no idea what kind of game it is.",es:"Quiero probar el mahjong, pero no tengo ni idea de qué tipo de juego es."},
+ {s:"ron",m:"happy",t:"1234z",ja:"ほっほっ、まずは全体の流れからじゃ。麻雀はふつう4人で遊ぶ。テーブルを囲んで、東・南・西・北の席に座るのじゃ。",en:"Ho ho, let's start with the big picture. Mahjong is usually played by four people, seated around a table as East, South, West and North.",es:"Jo, jo, empecemos por lo general. El mahjong suele jugarse entre cuatro personas, sentadas alrededor de una mesa como Este, Sur, Oeste y Norte."},
+ {s:"ron",m:"normal",ja:"使う牌(パイ)は136枚。最初に1人13枚ずつ配られる。自分の手元の牌を「手牌(てはい)」と言うのじゃ。",en:"There are 136 tiles. Each player starts with 13. The tiles in front of you are your hand.",es:"Hay 136 fichas. Cada jugador empieza con 13. Las fichas que tienes delante son tu mano."},
+ {s:"chun",m:"think",ja:"配られたら、どうするの？",en:"Then what?",es:"¿Y luego?"},
+ {s:"ron",m:"normal",t:"234m67m345p678p78s",d:"4z",ja:"順番に、山から1枚引いて、いらない1枚を捨てる。これをくり返すのじゃ。引くことを「ツモ」、捨てることを「切る」と言う。",en:"Players take turns drawing a tile and discarding one they don't need, over and over. Drawing is called 'tsumo' and discarding is called 'kiru' (cutting).",es:"Por turnos, cada uno roba una ficha y descarta la que no necesita, una y otra vez. Robar se dice 'tsumo' y descartar, 'kiru' (cortar)."},
+ {s:"chun",m:"think",ja:"何をしたら勝ちなの？",en:"So how do you win?",es:"¿Y cómo se gana?"},
+ {s:"ron",m:"normal",t:"234m555p678s111z77s",ja:"手牌を決まった形にそろえたら「アガリ」じゃ。形は「3枚の組が4つ＋同じ牌2枚が1つ」で、合わせて14枚。",en:"Arrange your hand into a set shape and you win the hand. The shape is four groups of three plus one pair: 14 tiles in all.",es:"Si ordenas tu mano en una forma concreta, ganas la mano: cuatro grupos de tres y una pareja, 14 fichas en total."},
+ {s:"kan",m:"normal",ja:"3枚の組ってのは？",en:"Groups of three, like what?",es:"¿Grupos de tres, como qué?"},
+ {s:"ron",m:"normal",t:"234m555p",ja:"同じ種類で数字が続く3枚か、まったく同じ牌3枚じゃ。",en:"Either three in a row of the same suit, or three identical tiles.",es:"O tres seguidas del mismo palo, o tres fichas idénticas."},
+ {s:"ron",m:"normal",ja:"アガり方は2つ。最後の1枚を自分で引いたら「ツモ」、ほかの人が捨てた牌で完成したら「ロン」と言ってアガれる。",en:"There are two ways to win: complete your hand with a tile you draw yourself and call 'tsumo', or with a tile someone else discards and call 'ron'.",es:"Hay dos formas de ganar: completar la mano con una ficha que robas tú y decir 'tsumo', o con una ficha que descarta otro y decir 'ron'."},
+ {s:"kan",m:"angry",ja:"ロンされたら、その牌を捨てたやつが点を払うのか？",en:"So if someone rons off my discard, I pay?",es:"¿Entonces si alguien hace ron con mi descarte, pago yo?"},
+ {s:"ron",m:"stern",ja:"そうじゃ。ロンなら捨てた人が、ツモなら残りの全員が点を払う。みんな25,000点から始めて、何回か遊んだ後に一番点数が多い人が勝ちじゃ。",en:"Yes. On a ron the discarder pays, and on a tsumo everyone else pays. Everyone starts with 25,000 points, and after several hands, whoever has the most wins.",es:"Sí. Con ron paga quien descartó, y con tsumo pagan todos los demás. Todos empiezan con 25.000 puntos y, tras varias manos, gana quien tenga más."},
+ {s:"chun",m:"think",ja:"どうやって戦えばいいの？",en:"How should I play, then?",es:"¿Y cómo debo jugar?"},
+ {s:"ron",m:"normal",ja:"大事なのは2つ。1つは、いらない牌を上手に選んで、早くアガリの形に近づけること。もう1つは、ほかの人がアガりそうなとき、その人に当たる牌を捨てないことじゃ。",en:"Two things matter. First, choose your discards well to reach the winning shape quickly. Second, when someone else is close to winning, avoid discarding the tile they need.",es:"Dos cosas importan. Primero, elegir bien tus descartes para llegar rápido a la forma ganadora. Segundo, cuando otro está cerca de ganar, no descartar la ficha que necesita."},
+ {s:"ron",m:"normal",ja:"もう1つ、アガるには「役(やく)」という条件が必要じゃが、それは慣れてからでよい。",en:"One more rule: to win you need at least one 'yaku' (a scoring pattern). You can learn that once you're comfortable.",es:"Una regla más: para ganar necesitas al menos un 'yaku' (un patrón de puntuación). Puedes aprenderlo cuando te sientas cómodo."},
+ {s:"kan",m:"happy",ja:"よし、早くアガって、相手には当たらない！覚えたぜ！",en:"Got it: win fast, don't feed the others! Caw!",es:"Entendido: ganar rápido y no regalar fichas. ¡Cra!"},
+ {s:"chun",m:"happy",ja:"次は牌の種類を覚えて、それから「何切る」だね！",en:"Next I'll learn the tiles, then 'what to discard'!",es:"¡Lo siguiente es aprender las fichas y luego '¿qué descarto?'!"},
+]},
+{id:"nanikiru",title:{ja:["「何切る」ってなに？","1枚引いて、1枚捨てる"],en:["What is 'what to discard'?","Draw one, discard one"],es:["¿Qué es '¿qué descarto?'?","Roba una, descarta una"]},lines:[
+ {s:"chun",m:"think",ja:"「何切る」ってよく聞くけど、何のことチュン？",en:"People keep saying 'nanikiru'... what is it?",es:"Todos dicen 'nanikiru'... ¿qué es?"},
+ {s:"ron",m:"normal",ja:"麻雀では、自分の番が来るたびに山から1枚引く。これをツモと言うのじゃ。",en:"In mahjong, every turn you draw one tile from the wall. That's called a draw (tsumo).",es:"En el mahjong, en cada turno robas una ficha del muro. Eso se llama robo (tsumo)."},
+ {s:"ron",m:"normal",t:"234m67m345p678p78s",d:"4z",ja:"手牌は13枚。1枚引くと14枚になる。",en:"Your hand has 13 tiles. After drawing, you have 14.",es:"Tu mano tiene 13 fichas. Al robar, tienes 14."},
+ {s:"chun",m:"think",ja:"14枚のままだとどうなるの？",en:"What happens with 14?",es:"¿Y qué pasa con 14?"},
+ {s:"ron",m:"normal",ja:"アガリでなければ、1枚捨てて13枚に戻す。これを「切る」と言う。どれを切るか考える問題が「何切る」じゃ。",en:"Unless you've won, you discard one tile to get back to 13. Choosing which one to discard is what a 'what to discard' puzzle (nanikiru) is about.",es:"Si no has ganado, descartas una ficha para volver a 13. Elegir cuál descartar es de lo que tratan los problemas de '¿qué descarto?' (nanikiru)."},
+ {s:"kan",m:"happy",ja:"要らない牌を捨てればいいんだろ？",en:"Just toss the useless one, right? Caw!",es:"Tira la inútil y ya, ¿no? ¡Cra!"},
+ {s:"ron",m:"normal",ja:"そうじゃ。アガリの形は「3枚の組×4＋2枚の組×1」。どの組にもなりそうにない牌が、要らない牌じゃ。",en:"Right. A winning hand is four sets of three plus one pair. A tile that can't join any set is the useless one.",es:"Así es. Una mano ganadora son cuatro grupos de tres y una pareja. La ficha que no puede formar ningún grupo es la inútil."},
+ {s:"ron",m:"think",try:{hand:"234m67m345p678p78s4z",ans:[30],
+   ok:{ja:"北は字牌だから順子にならないし、1枚だけだから組にもならない！",en:"North is an honor, so it can't form a sequence, and there's only one, so it can't make a set either!",es:"¡El Norte es un honor, así que no forma escalera, y como solo hay una, tampoco forma grupo!"},
+   ng:{ja:"その牌は、となりの牌と組になれそうじゃ。どの牌ともつながらない牌を探すのじゃ。",en:"That tile could join its neighbors. Look for a tile that connects with nothing.",es:"Esa ficha podría unirse a sus vecinas. Busca una que no conecte con nada."}},
+   ja:"では、この14枚から1枚切ってみよ。",en:"Now, discard one tile from these 14.",es:"Ahora, descarta una de estas 14."},
+ {s:"ron",m:"happy",ja:"見事じゃ。問題ではさらに「受け入れ」、つまり次に引いたときに手が進む牌の多さを比べて、一番良い1枚を選ぶ。それは次のレッスンで学ぶのじゃ。",en:"Well done. The puzzles also compare acceptance, how many future draws would move your hand forward, to find the single best tile. That's the next lesson.",es:"Muy bien. Los problemas también comparan la aceptación, cuántos robos futuros harían avanzar tu mano, para hallar la mejor ficha. Eso es la siguiente lección."},
+ {s:"chun",m:"happy",ja:"「今日の5問」の1問目はやさしい問題だから、さっそく挑戦してみようチュン！",en:"The first daily puzzle is an easy one, so let's give it a try! Chirp!",es:"El primer problema del diario es fácil, ¡así que probémoslo! ¡Pío!"},
+]},
+{id:"shanten",title:{ja:["向聴数と受け入れ","何切るの用語を覚えよう"],en:["Shanten and acceptance","Terms used in discard puzzles"],es:["Shanten y aceptación","Términos de los problemas de descarte"]},lines:[
+ {s:"chun",m:"think",ja:"問題に出てくる「向聴」と「受け入れ」って何チュン？",en:"What do 'shanten' and 'acceptance' in the puzzles mean?",es:"¿Qué significan 'shanten' y 'aceptación' en los problemas?"},
+ {s:"ron",m:"normal",ja:"向聴(シャンテン)は、聴牌まであと何枚かを表す数じゃ。1向聴なら、良い牌があと1枚来れば聴牌じゃ。",en:"Shanten is how many tiles you are from tenpai. At 1-shanten, one good draw puts you in tenpai.",es:"El shanten indica a cuántas fichas estás del tenpai. Con 1-shanten, un buen robo te deja en tenpai."},
+ {s:"ron",m:"normal",t:"23m456p789s55s234s",w:"14m",ja:"たとえばこの13枚は聴牌。1萬か4萬でアガリじゃ。",en:"These 13 tiles are tenpai: a 1-man or 4-man wins.",es:"Estas 13 fichas están en tenpai: gana con 1-man o 4-man."},
+ {s:"kan",m:"normal",ja:"じゃあ聴牌の一歩手前が1向聴、二歩手前が2向聴ってことか。",en:"So one step before tenpai is 1-shanten, and two steps is 2-shanten.",es:"O sea, un paso antes del tenpai es 1-shanten y dos pasos, 2-shanten."},
+ {s:"ron",m:"happy",ja:"その通り。何切るでは、まず向聴数を増やさない牌を切るのが基本じゃ。",en:"Exactly. In discard puzzles, first discard a tile that doesn't increase your shanten.",es:"Exacto. En los problemas de descarte, primero descarta una ficha que no aumente tu shanten."},
+ {s:"chun",m:"think",ja:"受け入れは？",en:"And acceptance?",es:"¿Y la aceptación?"},
+ {s:"ron",m:"normal",t:"23m",w:"14m",ja:"受け入れは、手が一歩進む牌が残り何枚あるかじゃ。23萬なら1萬と4萬が各4枚で、合わせて8枚。",en:"Acceptance is how many remaining tiles would move your hand forward. With 2-3 man, the 1-man and 4-man make 8 tiles.",es:"La aceptación es cuántas fichas quedan que harían avanzar tu mano. Con 2-3 man, el 1-man y el 4-man suman 8 fichas."},
+ {s:"ron",m:"normal",ja:"向聴数が同じなら、受け入れが多い切り方ほど良い。差が1〜2枚ならほぼ互角じゃから、準正解としておる。",en:"At equal shanten, the discard with more acceptance is better. A gap of only 1 or 2 tiles is nearly even, so it counts as near-best.",es:"Con el mismo shanten, es mejor el descarte con más aceptación. Una diferencia de 1 o 2 fichas es casi igual, así que cuenta como casi correcta."},
+ {s:"kan",m:"happy",ja:"なるほどな。これで「今日の5問」も怖くねえぜ！",en:"Got it. Now the daily puzzles don't scare me! Caw!",es:"Entendido. ¡Ahora el diario no me asusta! ¡Cra!"},
+ {s:"chun",m:"happy",ja:"ちなみに、このアプリの何切るは牌効率（受け入れの広さ）だけで判定してるよ。役やドラは考えないチュン。",en:"By the way, discard puzzles here are judged only on tile efficiency (acceptance). Yaku and dora aren't considered. Chirp!",es:"Por cierto, aquí los descartes se evalúan solo por eficiencia (aceptación). No se consideran yaku ni dora. ¡Pío!"},
+]},
+{id:"waits",title:{ja:["待ちの5つの形","両面・嵌張・辺張・単騎・シャンポン"],en:["The five waits","Ryanmen, kanchan, penchan, tanki, shanpon"],es:["Las cinco esperas","Ryanmen, kanchan, penchan, tanki, shanpon"]},lines:[
+ {s:"kan",m:"happy",ja:"よう、チュン。聴牌したら待ちなんて1つだろ？ オレは毎回それで勝ってるぜ。",en:"Hey Chun. Once you're tenpai there's only one wait, right? That's how I win every time. Caw!",es:"Eh, Chun. Cuando estás en tenpai solo hay una espera, ¿no? Así gano siempre. ¡Cra!"},
+ {s:"ron",m:"normal",t:"23m",w:"14m",ja:"ほっほっ、カンよ。待ちには形があるのじゃ。まずは両面(リャンメン)。",en:"Ho ho, Kan. Waits come in shapes. First, the two-sided wait: ryanmen.",es:"Jo, jo, Kan. Las esperas tienen formas. Primero, la espera de dos lados: ryanmen."},
+ {s:"chun",m:"think",ja:"23なら、1でも4でも順子になる！",en:"With 2-3, either a 1 or a 4 makes a sequence!",es:"Con 2-3, ¡tanto el 1 como el 4 forman escalera!"},
+ {s:"ron",m:"happy",t:"24p",w:"3p",ja:"そうじゃ。2種×4枚で最大8枚。一番強い基本の待ちじゃ。次は嵌張(カンチャン)、真ん中が抜けた形。",en:"Right. Two kinds, four each: up to 8 tiles. The strongest basic wait. Next, kanchan: the closed wait, with a gap in the middle.",es:"Así es. Dos tipos, cuatro de cada uno: hasta 8 fichas. La espera básica más fuerte. Ahora el kanchan: la espera cerrada, con un hueco en medio."},
+ {s:"kan",m:"happy",ja:"カンチャン！ オレの名前が入ってるじゃねえか。最強だな！",en:"Kanchan! It's got my name in it. Must be the best!",es:"¡Kanchan! Lleva mi nombre. ¡Debe ser la mejor!"},
+ {s:"ron",m:"stern",t:"12s",w:"3s",ja:"3しか来んから4枚だけじゃ。辺張(ペンチャン)も同じく4枚。12なら3しか来ん。",en:"Only the 3 works, so just 4 tiles. Penchan, the edge wait, is also 4 tiles: 1-2 can only take a 3.",es:"Solo sirve el 3, así que apenas 4 fichas. El penchan, la espera de borde, también son 4: con 1-2 solo entra el 3."},
+ {s:"chun",m:"normal",ja:"残りの2つは？",en:"What are the other two?",es:"¿Y las otras dos?"},
+ {s:"ron",m:"normal",t:"7z",w:"7z",ja:"単騎(タンキ)は、1枚で雀頭を待つ形じゃ。",en:"Tanki waits on a single tile to make the pair.",es:"El tanki espera una ficha sola para formar la pareja."},
+ {s:"ron",m:"normal",t:"33m88p",w:"3m8p",ja:"シャンポンは対子2組。どちらかが刻子になればアガリじゃ。",en:"Shanpon has two pairs, and wins when either one becomes a triplet.",es:"El shanpon tiene dos parejas y gana cuando una de ellas se convierte en trío."},
+ {s:"kan",m:"oops",ja:"くっ…待ちが5種類もあったとは。次は全部見抜いてやるぜ！",en:"Ugh... five kinds of waits? Next time I'll spot them all! Caw!",es:"Uf... ¿cinco tipos de espera? ¡La próxima las veo todas! ¡Cra!"},
+ {s:"chun",m:"happy",ja:"「待ち当て」で練習しようチュン！",en:"Let's practice in Waits! Chirp!",es:"¡Practiquemos en Esperas! ¡Pío!"},
+]},
+{id:"basics",title:{ja:["何切るの基本","孤立牌と受け入れ枚数"],en:["Discard basics","Isolated tiles and acceptance"],es:["Lo básico del descarte","Fichas aisladas y aceptación"]},lines:[
+ {s:"chun",m:"think",ja:"何を切るか、いつも迷うチュン…",en:"I never know what to discard...",es:"Nunca sé qué descartar..."},
+ {s:"kan",m:"happy",ja:"簡単だろ。いらなそうな牌を適当に切ればいいんだぜ。",en:"Easy. Just toss whatever looks useless. Caw!",es:"Fácil. Tira lo que parezca inútil. ¡Cra!"},
+ {s:"ron",m:"stern",ja:"「適当」では強くなれんぞ。基本は、他の牌とつながらない孤立牌から切ることじゃ。",en:"'Whatever' won't make you strong. The basic rule: discard isolated tiles first, the ones that connect to nothing.",es:"'Lo que sea' no te hará fuerte. La regla básica: descarta primero las fichas aisladas, las que no conectan con nada."},
+ {s:"ron",m:"normal",t:"1z9m2s5p",ja:"孤立牌は一般に、字牌→1・9→2・8→真ん中の順に使いにくい。真ん中の牌ほど、くっつく相手が多いからじゃ。",en:"Among isolated tiles, usefulness generally goes honors, then 1s and 9s, then 2s and 8s, then middle tiles. Middle tiles have more neighbors to connect with.",es:"Entre las aisladas, la utilidad suele ir así: honores, luego 1 y 9, luego 2 y 8, luego las del medio. Las del medio tienen más vecinas con las que conectar."},
+ {s:"chun",m:"happy",ja:"5が一番使いやすいんだね！",en:"So the 5 is the most useful!",es:"¡Entonces el 5 es la más útil!"},
+ {s:"ron",m:"normal",ja:"うむ。迷ったら受け入れ枚数を数えるのじゃ。切ったあと、何種類・何枚で手が進むか。多い方が良い打牌じゃ。",en:"Indeed. When in doubt, count your acceptance: after the discard, how many kinds and tiles move your hand forward. More is better.",es:"Así es. Si dudas, cuenta la aceptación: tras el descarte, cuántos tipos y fichas hacen avanzar tu mano. Cuantas más, mejor."},
+ {s:"kan",m:"oops",ja:"枚数まで数えるのかよ…",en:"You actually count them...?",es:"¿De verdad las cuentas...?"},
+ {s:"chun",m:"happy",ja:"「何切る」なら表で全部見せてくれるよ。いっしょにやろう、カン！",en:"Discard shows you the full table. Let's practice together, Kan!",es:"Descarte te muestra la tabla completa. ¡Practiquemos juntos, Kan!"},
+ {s:"kan",m:"normal",ja:"…しょうがねえ、付き合ってやるぜ。",en:"...Fine. I'll tag along.",es:"...Vale. Te acompaño."},
+]},
+{id:"furiten",title:{ja:["フリテン","ロンできない落とし穴"],en:["Furiten","The trap that blocks your ron"],es:["Furiten","La trampa que bloquea tu ron"]},lines:[
+ {s:"kan",m:"angry",ja:"おい爺さん！ 待ってた牌が出たのにロンできなかったぞ！",en:"Hey, Grandpa! My winning tile came out but I couldn't ron!",es:"¡Oye, abuelo! ¡Salió mi ficha ganadora y no pude hacer ron!"},
+ {s:"ron",m:"normal",ja:"それはフリテンじゃな。自分の待ちの牌を自分で1枚でも捨てていると、ロンでアガれないのじゃ。",en:"That's furiten. If you've discarded any of your own winning tiles, you can't win by ron.",es:"Eso es furiten. Si has descartado alguna de tus propias fichas ganadoras, no puedes ganar por ron."},
+ {s:"ron",m:"think",t:"23m",w:"14m",ja:"たとえば手が23萬で、自分の捨て牌に4萬があるとしよう。",en:"Say your hand has 2-3 man, and there's a 4-man in your discards.",es:"Supón que tienes 2-3 man y hay un 4-man en tus descartes."},
+ {s:"chun",m:"think",ja:"1萬でもアガれるから、1萬ならロンできる…？",en:"The 1-man still wins, so I can ron on a 1-man...?",es:"El 1-man también gana, así que puedo hacer ron con el 1-man...?"},
+ {s:"ron",m:"stern",ja:"できん。待ちのどれか1つでも捨てていれば、どの待ちでもロンできなくなる。ツモならアガれるがの。",en:"No. If even one of your waits is in your discards, you can't ron on any of them. You can still win by tsumo, though.",es:"No. Si una sola de tus esperas está en tus descartes, no puedes hacer ron con ninguna. Eso sí, puedes ganar por tsumo."},
+ {s:"kan",m:"oops",ja:"そういうことか…オレ、前に4萬切ってたぜ。",en:"So that's it... I'd thrown a 4-man earlier. Caw...",es:"Así que era eso... Había tirado un 4-man antes. Cra..."},
+ {s:"ron",m:"normal",ja:"他にも、アガリ牌を見逃すとその巡の間はフリテン、リーチ後に見逃すとその局の間ずっとフリテンじゃ。聴牌したら、まず自分の捨て牌を確かめるのじゃ。",en:"You're also furiten until your next turn after passing on a winning tile, and for the rest of the hand if you pass after riichi. Once you're tenpai, check your own discards first.",es:"También hay furiten hasta tu siguiente turno si dejas pasar una ficha ganadora, y el resto de la mano si la dejas pasar tras declarar riichi. En tenpai, revisa primero tus descartes."},
+ {s:"chun",m:"happy",ja:"待ちを全部知っておくのが大事なんだね。待ち当て、もっとやるチュン！",en:"So knowing all your waits really matters. More wait practice! Chirp!",es:"Así que conocer todas tus esperas es clave. ¡Más práctica de esperas! ¡Pío!"},
+]},
+{id:"defense",title:{ja:["守りの基本","現物とスジ"],en:["Defense basics","Genbutsu and suji"],es:["Defensa básica","Genbutsu y suji"]},lines:[
+ {s:"chun",m:"oops",ja:"リーチされた！ 何を切ればいいチュン…？",en:"Someone declared riichi! What do I discard...?",es:"¡Alguien declaró riichi! ¿Qué descarto...?"},
+ {s:"kan",m:"happy",ja:"気にせず攻めるに決まってるだろ！",en:"Ignore it and attack, obviously!",es:"¡Ignóralo y ataca, obvio!"},
+ {s:"ron",m:"stern",ja:"手が良くないときは、守るのも実力じゃ。一番安全なのは現物(ゲンブツ)。リーチした人がすでに捨てた牌じゃ。",en:"When your hand isn't good, defending is part of skill. The safest tiles are genbutsu: tiles the riichi player has already discarded.",es:"Cuando tu mano no es buena, defender también es habilidad. Las fichas más seguras son el genbutsu: las que el jugador en riichi ya descartó."},
+ {s:"chun",m:"think",ja:"フリテンがあるから、その人はその牌でロンできないんだ！",en:"Because of furiten, they can't ron on those tiles!",es:"¡Por el furiten, no puede hacer ron con esas fichas!"},
+ {s:"ron",m:"happy",t:"4s",w:"17s",ja:"その通り。次にスジ。4が捨てられていれば、1と7は両面待ちには当たらん。",en:"Exactly. Next, suji. If they've discarded a 4, the 1 and 7 can't hit a two-sided wait.",es:"Exacto. Ahora, el suji. Si descartó un 4, el 1 y el 7 no pueden entrar en una espera de dos lados."},
+ {s:"kan",m:"normal",ja:"じゃあスジなら絶対安全なのか？",en:"So suji is totally safe?",es:"¿Entonces el suji es totalmente seguro?"},
+ {s:"ron",m:"stern",ja:"いや。嵌張・辺張・単騎・シャンポンには当たることがある。安全度は現物より下じゃ。",en:"No. It can still hit kanchan, penchan, tanki and shanpon waits. It's less safe than genbutsu.",es:"No. Aún puede entrar en kanchan, penchan, tanki y shanpon. Es menos seguro que el genbutsu."},
+ {s:"chun",m:"happy",ja:"攻めるか守るか、見極めが大事なんだね。",en:"So it's all about knowing when to attack and when to defend.",es:"Entonces todo está en saber cuándo atacar y cuándo defender."},
+ {s:"kan",m:"happy",ja:"ふん、オレは攻め時を見極めてやるぜ。カァー！",en:"Hmph. I'll master knowing when to attack. Caw!",es:"Bah. Yo dominaré cuándo atacar. ¡Cra!"},
+]},
+];
+
+
+Object.assign(I18N.ja,{lv_easy:"やさしい",lv_medium:"ふつう",lv_hard:"むずかしい",copyBtn:"文面をコピー"});
+Object.assign(I18N.en,{lv_easy:"Easy",lv_medium:"Normal",lv_hard:"Hard",copyBtn:"Copy text"});
+Object.assign(I18N.es,{lv_easy:"Fácil",lv_medium:"Normal",lv_hard:"Difícil",copyBtn:"Copiar texto"});
+
+
+Object.assign(I18N.ja,{welH:"ようこそ、雀学へ！"});Object.assign(I18N.en,{welH:"Welcome to Jangaku!"});Object.assign(I18N.es,{welH:"¡Bienvenido a Jangaku!"});
+Object.assign(I18N.ja,{
+ modeMix:"ふつう：混合",modeChin:"むずかしい：清一色形",
+ dNear:"準正解！最善は{b}切りだけど、差は{d}枚だけ。",nearHead:"準正解！ほぼ互角の選択だチュン",
+ legend:"🟩 最善　🟦 準正解　🟨 向聴数キープ　🟥 後退",
+ waitPartial:"{n}種中{k}種正解。",waitExtra:"違う牌を{e}枚選んでいた。",
+ dStartTitle:"今日の5問に挑戦しよう",dStartDesc:"14枚の手牌から1枚を切る「何切る」が5問。受け入れ（手が進む牌の枚数）がいちばん多くなる牌を選ぼう。後の問題ほど難しくなるよ。",
+ dStartKan:"カンも同じ問題に挑戦中。勝てるかな？",dStartBtn:"はじめる",dStartNew:"用語が分からないときは、先に道場で覚えよう",
+ glossSum:"用語が分からないときは",
+ glossNani:"<b>聴牌</b>：あと1枚でアガれる状態。<br><b>向聴</b>：聴牌まであと何枚必要か。1向聴ならあと1枚。<br><b>受け入れ</b>：手が一歩進む牌の残り枚数。多いほど良い。<br><b>準正解</b>：最善手との差が2枚以内の打牌。",
+ glossWait:"<b>聴牌</b>：あと1枚でアガれる状態。<br><b>待ち</b>：聴牌しているときにアガれる牌。1種類とは限らない。",
+ welSay:"ボクはチュン。いっしょに麻雀を覚えよう！まず、きみのことを教えてチュン。",welQ:"麻雀の経験は？",
+ wel_new:"はじめて",wel_new_d:"牌の名前から始めよう",wel_basic:"ルールは少し知っている",wel_basic_d:"道場で基本を固めよう",wel_pro:"よく打つ",wel_pro_d:"今日の5問に挑戦しよう",
+});
+Object.assign(I18N.en,{
+ modeMix:"Normal: mixed",modeChin:"Hard: one suit",
+ dNear:"Near-best! Discarding {b} is best, but you're only {d} tile(s) behind.",nearHead:"Near-best! Almost an even choice. Chirp!",
+ legend:"🟩 best  🟦 near-best  🟨 same shanten  🟥 step back",
+ waitPartial:"You found {k} of {n}.",waitExtra:" {e} of your picks didn't win.",
+ dStartTitle:"Take on today's 5 puzzles",dStartDesc:"Five 'what to discard' puzzles: pick one tile to discard from 14. Choose the discard that leaves the most useful tiles. They get harder as you go.",
+ dStartKan:"Kan is taking on the same puzzles. Can you beat him?",dStartBtn:"Start",dStartNew:"New to the terms? Learn them in the Dojo first.",
+ glossSum:"Unfamiliar terms?",
+ glossNani:"<b>Tenpai</b>: one tile away from winning.<br><b>Shanten</b>: how many tiles you are from tenpai. 1-shanten means one more.<br><b>Acceptance</b>: how many remaining tiles move your hand forward. More is better.<br><b>Near-best</b>: a discard within 2 tiles of the best acceptance.",
+ glossWait:"<b>Tenpai</b>: one tile away from winning.<br><b>Wait</b>: a tile that wins when you're tenpai. There can be more than one.",
+ welSay:"I'm Chun. Let's learn mahjong together! First, tell me about yourself.",welQ:"How much mahjong have you played?",
+ wel_new:"I'm brand new",wel_new_d:"Start with the tile names",wel_basic:"I know the basic rules",wel_basic_d:"Build the basics in the Dojo",wel_pro:"I play regularly",wel_pro_d:"Try today's 5 puzzles",
+});
+Object.assign(I18N.es,{
+ modeMix:"Normal: mixto",modeChin:"Difícil: un palo",
+ dNear:"¡Casi correcta! Lo mejor es descartar {b}, pero solo te quedas a {d} ficha(s).",nearHead:"¡Casi correcta! Una elección casi igual. ¡Pío!",
+ legend:"🟩 mejor  🟦 casi correcta  🟨 mismo shanten  🟥 retroceso",
+ waitPartial:"Encontraste {k} de {n}.",waitExtra:" {e} de tus elecciones no ganaban.",
+ dStartTitle:"Afronta los 5 problemas de hoy",dStartDesc:"Cinco problemas de '¿qué descarto?': elige una ficha de las 14. Busca el descarte que deje más fichas útiles. Se ponen más difíciles.",
+ dStartKan:"Kan también hace los mismos problemas. ¿Podrás ganarle?",dStartBtn:"Empezar",dStartNew:"¿No conoces los términos? Apréndelos primero en el Dojo.",
+ glossSum:"¿Términos desconocidos?",
+ glossNani:"<b>Tenpai</b>: a una ficha de ganar.<br><b>Shanten</b>: a cuántas fichas estás del tenpai. 1-shanten significa una más.<br><b>Aceptación</b>: cuántas fichas restantes hacen avanzar tu mano. Cuantas más, mejor.<br><b>Casi correcta</b>: un descarte a 2 fichas o menos de la mejor aceptación.",
+ glossWait:"<b>Tenpai</b>: a una ficha de ganar.<br><b>Espera</b>: una ficha que gana cuando estás en tenpai. Puede haber más de una.",
+ welSay:"Soy Chun. ¡Aprendamos mahjong juntos! Primero, cuéntame sobre ti.",welQ:"¿Cuánta experiencia tienes con el mahjong?",
+ wel_new:"Soy totalmente nuevo",wel_new_d:"Empieza con los nombres de las fichas",wel_basic:"Conozco las reglas básicas",wel_basic_d:"Refuerza lo básico en el Dojo",wel_pro:"Juego a menudo",wel_pro_d:"Prueba los 5 problemas de hoy",
+});
+
+
+Object.assign(I18N.ja,{drawLbl:"ツモ",tryPrompt:"牌をタップして切ってみよう",
+ dStartDesc:"麻雀は「1枚引いたら1枚捨てる」ゲーム。14枚の手牌からどれを捨てるか選ぶのが「何切る」だよ。受け入れ（次に手が進む牌の枚数）がいちばん多くなる牌を選ぼう。後の問題ほど難しくなるよ。",
+ dStartNew:"「何切る」がはじめてなら、先に道場で学ぼう",whatIsNani:"「何切る」ってなに？（道場）",nextDojo:"牌を覚えたら、道場で「何切る」を学ぼう →"});
+Object.assign(I18N.en,{drawLbl:"Draw",tryPrompt:"Tap a tile to discard it",
+ dStartDesc:"Mahjong is a game of 'draw one, discard one'. Choosing which of your 14 tiles to throw away is a 'what to discard' puzzle. Pick the discard that leaves the most tiles that can improve your hand. They get harder as you go.",
+ dStartNew:"New to 'what to discard'? Learn it in the Dojo first.",whatIsNani:"What is 'what to discard'? (Dojo)",nextDojo:"Know the tiles? Learn 'what to discard' in the Dojo →"});
+Object.assign(I18N.es,{drawLbl:"Robo",tryPrompt:"Toca una ficha para descartarla",
+ dStartDesc:"El mahjong es un juego de 'roba una, descarta una'. Elegir cuál de tus 14 fichas tirar es un problema de '¿qué descarto?'. Elige el descarte que deje más fichas que mejoren tu mano. Se ponen más difíciles.",
+ dStartNew:"¿Nuevo en '¿qué descarto?'? Apréndelo primero en el Dojo.",whatIsNani:"¿Qué es '¿qué descarto?'? (Dojo)",nextDojo:"¿Ya conoces las fichas? Aprende '¿qué descarto?' en el Dojo →"});
+
+
+Object.assign(I18N.ja,{goLearn:"牌の種類を覚えにいく",wel_new_d:"麻雀がどんなゲームかから始めよう"});
+Object.assign(I18N.en,{goLearn:"Go learn the tiles",wel_new_d:"Start with what mahjong is"});
+Object.assign(I18N.es,{goLearn:"Aprender las fichas",wel_new_d:"Empieza por qué es el mahjong"});
+
+
+Object.assign(I18N.ja,{tabHome:"ホーム",tabStudy:"学ぶ",tabPractice:"練習",tabLearn:"牌を知る",
+ nextUp:"次はこれ！",letsGo:"やってみる",nextBadge:"次",toHome:"ホームで次を見る",
+ homeDailyD:"毎日5問、カンと勝負。後の問題ほど難しくなるよ。",homeMoreT:"何切るの練習で腕を磨こう",homeMoreD:"ロードマップは全部クリア！難易度を上げて挑戦しよう。",
+ homeDailyDone:"今日の5問クリア（{s}/5）",homeDailyNot:"まだ挑戦していません",homeStreak:"{n}日連続",
+ pathH:"はじめてのロードマップ",pathDone:"{d} / {n} 完了",moreH:"ほかにできること",
+ st_tiles:"牌の名前を覚える",st_tiles_d:"名前クイズで10問正解（牌を知る）",st_daily:"今日の5問に挑戦",st_daily_d:"カンと勝負（今日の5問）",st_waitq:"待ち当てを10問",st_waitq_d:"待ちを見抜く練習（練習）",st_naniq:"何切るの練習を10問",st_naniq_d:"難易度を選んで練習（練習）",
+ m_dojo:"キャラの会話でルールを学ぶ",m_nani:"難易度を選んで何問でも",m_wait:"聴牌の待ちを見抜く",m_yaku:"アガるための条件の一覧",m_learn:"牌の種類と名前クイズ",m_trivia:"ローカルルールや世界の麻雀"});
+Object.assign(I18N.en,{tabHome:"Home",tabStudy:"Learn",tabPractice:"Practice",
+ nextUp:"Up next",letsGo:"Let's go",nextBadge:"Next",toHome:"See what's next",
+ homeDailyD:"Five puzzles a day, head to head with Kan. They get harder as you go.",homeMoreT:"Sharpen your discards",homeMoreD:"Roadmap complete! Raise the difficulty and keep going.",
+ homeDailyDone:"Daily 5 cleared ({s}/5)",homeDailyNot:"Not played yet",homeStreak:"{n}-day streak",
+ pathH:"Beginner roadmap",pathDone:"{d} of {n} done",moreH:"More to explore",
+ st_tiles:"Learn the tile names",st_tiles_d:"Get 10 right in the name quiz (Tiles)",st_daily:"Try the daily 5",st_daily_d:"Take on Kan (Daily)",st_waitq:"Do 10 wait puzzles",st_waitq_d:"Practice spotting waits (Practice)",st_naniq:"Do 10 discard puzzles",st_naniq_d:"Pick your level (Practice)",
+ m_dojo:"Learn the rules through character chats",m_nani:"Unlimited puzzles at your level",m_wait:"Spot the winning tiles",m_yaku:"Every scoring pattern at a glance",m_learn:"Tile types and a name quiz",m_trivia:"House rules and mahjong worldwide"});
+Object.assign(I18N.es,{tabHome:"Inicio",tabStudy:"Aprender",tabPractice:"Práctica",
+ nextUp:"Lo siguiente",letsGo:"Vamos",nextBadge:"Ahora",toHome:"Ver lo siguiente",
+ homeDailyD:"Cinco problemas al día, cara a cara con Kan. Se ponen más difíciles.",homeMoreT:"Mejora tus descartes",homeMoreD:"¡Ruta completada! Sube la dificultad y sigue.",
+ homeDailyDone:"Diario completado ({s}/5)",homeDailyNot:"Aún sin jugar",homeStreak:"Racha de {n} días",
+ pathH:"Ruta para principiantes",pathDone:"{d} de {n} completados",moreH:"Más para explorar",
+ st_tiles:"Aprende los nombres de las fichas",st_tiles_d:"Acierta 10 en el quiz de nombres (Fichas)",st_daily:"Prueba el diario",st_daily_d:"Enfréntate a Kan (Diario)",st_waitq:"Haz 10 problemas de esperas",st_waitq_d:"Practica detectar esperas (Práctica)",st_naniq:"Haz 10 problemas de descarte",st_naniq_d:"Elige tu nivel (Práctica)",
+ m_dojo:"Aprende reglas conversando con los personajes",m_nani:"Problemas ilimitados a tu nivel",m_wait:"Detecta las fichas ganadoras",m_yaku:"Todos los patrones de un vistazo",m_learn:"Tipos de fichas y quiz de nombres",m_trivia:"Reglas locales y mahjong en el mundo"});
+
+Object.assign(I18N.ja,{feedbackLink:"ご意見・不具合を送る",privacyLink:"プライバシーポリシー"});
+Object.assign(I18N.en,{feedbackLink:"Send feedback",privacyLink:"Privacy policy"});
+Object.assign(I18N.es,{feedbackLink:"Enviar comentarios",privacyLink:"Política de privacidad"});
+// ===== 言語 =====
+const $=s=>document.querySelector(s);
+let LANG='ja';
+try{
+  const saved=localStorage.getItem('jangaku-lang');
+  if(saved&&I18N[saved])LANG=saved;
+  else{const n=(navigator.language||'ja').slice(0,2);LANG=I18N[n]?n:'en';}
+}catch(e){}
+function T(k,v){let s=I18N[LANG][k];if(s===undefined)s=I18N.ja[k];if(v&&typeof s==='string')s=s.replace(/\{(\w+)\}/g,(_,x)=>v[x]!==undefined?v[x]:'');return s;}
+function tileLabel(i){
+  if(LANG==='ja')return i<27?(i%9+1)+['萬','筒','索'][Math.floor(i/9)]:HONOR[i-27];
+  return i<27?(i%9+1)+'-'+['man','pin','sou'][Math.floor(i/9)]:T('honorLabel')[i-27];
+}
+function tileName(i){
+  if(LANG==='ja'){
+    if(i<9)return (i===0?'イー':NUMREAD[i])+'ワン';
+    if(i<18)return NUMREAD[i-9]+'ピン';
+    if(i<27)return NUMREAD[i-18]+'ソー';
+    return HONORREAD[i-27];
+  }
+  return i<27?tileLabel(i):T('honorName')[i-27];
+}
+function joinList(arr,type){
+  if(LANG==='ja'||typeof Intl==='undefined'||!Intl.ListFormat)return arr.join(T('sep'));
+  try{return new Intl.ListFormat(LANG,{type}).format(arr);}catch(e){return arr.join(T('sep'));}
+}
+function shantenText(s){return s===0?T('tenpai'):T('shanten',{s});}
+function tileEl(i,cls=''){return `<span class="tile ${cls}" data-t="${i}" role="img" aria-label="${tileLabel(i)}">${tileSVG(i)}</span>`;}
+function tilesRow(arr,cls=''){return arr.map(t=>tileEl(t,cls)).join('');}
+
+// ===== チュン =====
+let streak=0,tipIdx=-1;
+function guide(mood,html,cls=''){return `<div class="guide ${cls}"><span class="chun hop">${chunSVG(mood)}</span><div class="bubble">${html}</div></div>`;}
+function cameo(who,mood,html){return `<div class="guide cameo who-${who}"><span class="chun hop">${charSVG(who,mood)}</span><div class="bubble"><span class="nm">${T('names')[who]}</span>${html}</div></div>`;}
+const LESSON_FOR={wait:'waits',nani:'shanten',score:'score'};
+function lessonIdx(x){const n=Number(x);if(String(x).trim()!==''&&!isNaN(n))return n;return LESSONS.findIndex(l=>l.id===x);}
+function react(ok,detail,head,ctx){
+  streak=ok?streak+1:0;
+  if(!head){const pool=T(ok?'ok':'ng');head=pool[rnd(pool.length)];}
+  if(ok&&streak>=3)head=T('streak',{n:streak});
+  let out=guide(ok?'happy':'oops',`<b>${head}</b><br>${detail}`,ok?'ok':'ng');
+  if(ok){
+    if(streak>=3&&streak%3===0)out+=cameo('kan','oops',T('kanStreak'));
+    else if(Math.random()<.15)out+=cameo('ron','happy',T('ronPraise'));
+  }else if(ctx){
+    if(Math.random()<.4){const p=T('kanWrong');out+=cameo('kan','happy',p[rnd(p.length)]);}
+    let h=T({wait:'ronWait',nani:'ronNani',name:'ronName',score:'ronScore',manner:'ronManner'}[ctx]);
+    if(ctx in LESSON_FOR){const li=lessonIdx(LESSON_FOR[ctx]);h+=`<br><button class="link" data-lesson="${li}">${T('lessonLink',{t:(LESSONS[li].title[LANG]||LESSONS[li].title.en)[0]})}</button>`;}
+    out+=cameo('ron','normal',h);
+  }
+  return out;
+}
+
+// ===== 成績 =====
+let stats={name:{ok:0,n:0},wait:{ok:0,n:0},nani:{ok:0,n:0},score:{ok:0,n:0},manner:{ok:0,n:0}};
+try{const s=JSON.parse(localStorage.getItem('jangaku-stats')||'null');if(s)stats=Object.assign(stats,s);}catch(e){}
+function saveStats(){try{localStorage.setItem('jangaku-stats',JSON.stringify(stats));}catch(e){}renderStats();}
+function renderStats(){for(const k of ['name','wait','nani','score','manner']){const el=document.getElementById('st-'+k);if(el)el.textContent=stats[k].n?T('stat',{ok:stats[k].ok,n:stats[k].n}):T('statNone');}}
+
+// ===== タブ =====
+const GROUPS={study:['dojo','learn','yaku','trivia'],practice:['nani','wait'],table:['score','riipai','manner']};
+const SUBLABEL={dojo:'tabDojo',learn:'tabLearn',yaku:'tabYaku',trivia:'tabTrivia',nani:'tabNani',wait:'tabWait',score:'tabScore',riipai:'tabRiipai',manner:'tabManner'};
+let lastInGroup={study:'dojo',practice:'nani',table:'score'},curTab='home';
+function groupOf(id){for(const g in GROUPS)if(GROUPS[g].includes(id))return g;return id;}
+function renderSubnav(){
+  const g=groupOf(curTab),el=document.getElementById('subnav');
+  if(!GROUPS[g]){el.innerHTML='';el.parentElement.hidden=true;return;}
+  el.parentElement.hidden=false;
+  el.innerHTML=GROUPS[g].map(x=>`<button class="chip" data-sub="${x}" aria-pressed="${x===curTab}">${T(SUBLABEL[x])}</button>`).join('');
+}
+function showTab(id){
+  if(GROUPS[id])id=lastInGroup[id];
+  const g=groupOf(id);if(GROUPS[g])lastInGroup[g]=id;
+  curTab=id;
+  document.querySelectorAll('.tabs button').forEach(b=>{b.setAttribute('aria-selected',b.dataset.tab===g);if(b.dataset.tab===g)b.setAttribute('aria-controls',id);});
+  document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!==id);
+  renderSubnav();
+  if(id==='home')renderHome();
+  if(id==='daily')renderDaily();
+  if(id==='wait'&&!waitQ)newWait();
+  if(id==='nani'&&!naniQ)newNani();
+  if(id==='score'&&!scoreQ)newScore();
+  if(id==='riipai'&&!rp)newRiipai();
+  if(id==='manner'&&!mq)newManner();
+  if(id!=='welcome'){try{localStorage.setItem('jangaku-tab',id);}catch(e){}}
+  window.scrollTo({top:0});
+}
+
+// ===== 牌を知る =====
+function renderTiles(){
+  const ranges=[[0,9],[9,18],[18,27],[27,34]];
+  $('#tile-groups').innerHTML=T('groups').map(([t,d],g)=>{
+    let cells='';for(let i=ranges[g][0];i<ranges[g][1];i++)cells+=`<figure>${tileEl(i)}<figcaption>${tileName(i)}</figcaption></figure>`;
+    return `<section class="tgroup"><h3>${t}</h3><p class="note">${d}</p><div class="tgrid">${cells}</div></section>`;
+  }).join('');
+  $('#basic-ex').innerHTML=`<div class="bx"><div class="hand small">${tilesRow(parse('234m'))}</div><b>${T('shuntsu')}</b><span>${T('shuntsuD')}</span></div><div class="bx"><div class="hand small">${tilesRow(parse('555p'))}</div><b>${T('koutsu')}</b><span>${T('koutsuD')}</span></div><div class="bx"><div class="hand small">${tilesRow(parse('77s'))}</div><b>${T('jantou')}</b><span>${T('jantouD')}</span></div>`;
+  $('#basic-full').innerHTML=tilesRow(parse('234m555p678s111z77s'));
+  $('#hero-tiles').innerHTML=tilesRow([27,28,29,30,31,32,33]);
+}
+let nameQ=null;
+function newName(){
+  const ans=rnd(34);const opts=new Set([ans]);
+  while(opts.size<4){
+    let o;
+    if(ans<27&&Math.random()<.6){
+      // 日本語は読みの練習なので同じ種類、他言語は種類の見分けなので同じ数字
+      o=LANG==='ja'?ans-(ans%9)+rnd(9):(ans%9)+9*rnd(3);
+    }else o=rnd(34);
+    opts.add(o);
+  }
+  nameQ={ans,opts:shuffle([...opts]),done:false};
+  renderName();
+}
+function renderName(){
+  $('#name-tile').innerHTML=tileEl(nameQ.ans,'big');
+  $('#name-opts').innerHTML=nameQ.opts.map(o=>`<button class="opt" data-o="${o}">${tileName(o)}</button>`).join('');
+  $('#name-fb').innerHTML='';
+}
+$('#name-opts').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b||nameQ.done)return;
+  nameQ.done=true;const o=+b.dataset.o,ok=o===nameQ.ans;
+  stats.name.n++;if(ok)stats.name.ok++;saveStats();logEvent('q',ok?2:0,0);
+  document.querySelectorAll('#name-opts .opt').forEach(x=>{if(+x.dataset.o===nameQ.ans)x.classList.add('right');else if(x===b)x.classList.add('wrong');});
+  const v={l:tileLabel(nameQ.ans),n:tileName(nameQ.ans)};
+  $('#name-fb').innerHTML=react(ok,T(ok?'nameOk':'nameNg',v),ok&&nameQ.ans===33?T('nameSelf'):'','name');
+});
+
+// ===== 役一覧 =====
+let yakuFilter='all';
+function renderYaku(){
+  const gs=['all','1','2','3','6','ym'];
+  $('#yaku-filter').innerHTML=gs.map(g=>`<button class="chip" aria-pressed="${g===yakuFilter}" data-g="${g}">${g==='all'?T('all'):T('han')[g]}</button>`).join('');
+  $('#yaku-list').innerHTML=YAKU.filter(y=>yakuFilter==='all'||y.g===yakuFilter).map(y=>{
+    const L=y[LANG]||y.en;
+    const name=LANG==='ja'?L[0]:y.r, sub=LANG==='ja'?L[1]:L[0], desc=LANG==='ja'?L[2]:L[1];
+    return `<article class="yaku">
+      <header><span class="han han-${y.g==='ym'?'ym':y.g}">${T('han')[y.g]}</span><h3>${name}</h3><span class="reading">${sub}</span></header>
+      <p>${desc}</p><p class="cond">${T('cond')[y.c]}</p>
+      ${y.ex?`<div class="hand small">${tilesRow(parse(y.ex))}</div>`:''}
+    </article>`;}).join('');
+}
+$('#yaku-filter').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;yakuFilter=b.dataset.g;renderYaku();});
+
+// ===== 待ち当て =====
+let waitQ=null,waitMode='mix';
+function newWait(){
+  const q=genTenpai(waitMode);
+  waitQ={...q,sel:new Set(),done:false};
+  renderWait();
+}
+function renderWait(){
+  const q=waitQ;
+  $('#wait-hand').innerHTML=tilesRow(q.hand);
+  const pal=[];
+  for(const s of q.suits){const a=s*9,b=s===3?34:a+9;for(let i=a;i<b;i++)pal.push(i);}
+  $('#wait-pal').innerHTML=pal.map(i=>`<button class="pick" data-t="${i}" aria-pressed="${q.sel.has(i)}">${tileEl(i)}</button>`).join('');
+  $('#wait-fb').innerHTML='';
+  $('#wait-check').hidden=false;$('#wait-next').hidden=true;
+  $('#wait-check').disabled=!q.sel.size;
+  $('#wait-hint').innerHTML=glossHTML('wait')+hintArea('wait',q,q.hint||0,q.done);
+  for(let l=2;l<=(q.hint||0);l++){const b=document.querySelector(`#wait-pal .pick[data-t="${q.waits[l-2]}"]`);if(b)b.classList.add('glow');}
+  if(q.done){q.done=false;checkWait(true);}
+}
+$('#wait-pal').addEventListener('click',e=>{
+  const b=e.target.closest('.pick');if(!b||waitQ.done)return;
+  const t=+b.dataset.t;
+  if(waitQ.sel.has(t))waitQ.sel.delete(t);else waitQ.sel.add(t);
+  b.setAttribute('aria-pressed',waitQ.sel.has(t));
+  $('#wait-check').disabled=!waitQ.sel.size;
+});
+function checkWait(redraw){
+  if(!waitQ||waitQ.done)return;waitQ.done=true;
+  const W=new Set(waitQ.waits);
+  const ok=W.size===waitQ.sel.size&&[...W].every(t=>waitQ.sel.has(t));
+  let earn='';
+  if(!redraw){stats.wait.n++;if(ok)stats.wait.ok++;saveStats();earn=earnPractice(ok);logEvent('w',ok?2:0,waitQ.hint);}
+  $('#wait-hint').innerHTML=hintArea('wait',waitQ,waitQ.hint||0,true);
+  document.querySelectorAll('#wait-pal .glow').forEach(x=>x.classList.remove('glow'));
+  document.querySelectorAll('#wait-pal .pick').forEach(b=>{
+    const t=+b.dataset.t;
+    if(W.has(t))b.classList.add(waitQ.sel.has(t)?'right':'missed');
+    else if(waitQ.sel.has(t))b.classList.add('wrong');
+  });
+  const c=counts(waitQ.hand);
+  const rows=waitQ.waits.map(w=>{
+    c[w]++;const g=decompose(c);c[w]--;
+    return `<div class="win"><div class="win-head">${tileEl(w,'mini')}<span>${T('winWith')}</span></div><div class="groups">${(g||[]).map(x=>`<span class="grp">${tilesRow(x,'mini')}</span>`).join('')}</div></div>`;
+  }).join('');
+  const missed=[...W].some(t=>!waitQ.sel.has(t)),extra=[...waitQ.sel].some(t=>!W.has(t));
+  const hitN=[...W].filter(t=>waitQ.sel.has(t)).length,extraN=[...waitQ.sel].filter(t=>!W.has(t)).length;
+  const detail=(ok?'':T('waitPartial',{k:hitN,n:W.size})+(extraN?T('waitExtra',{e:extraN}):'')+' ')+T('waitRes',{w:joinList(waitQ.waits.map(tileLabel),'conjunction'),n:waitQ.waits.length});
+  const html=redraw?guide(ok?'happy':'oops',detail,ok?'ok':'ng'):react(ok,detail,ok?'':(missed&&!extra?T('waitMissed'):''),'wait');
+  $('#wait-fb').innerHTML=html+earn+rows;
+  $('#wait-check').hidden=true;$('#wait-next').hidden=false;
+}
+$('#wait-check').addEventListener('click',()=>checkWait(false));
+$('#wait-next').addEventListener('click',newWait);
+$('#wait-mode').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;waitMode=b.dataset.m;document.querySelectorAll('#wait-mode .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));newWait();});
+
+// ===== 何切る =====
+let naniQ=null,naniLevel='medium';
+$('#nani-level').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;naniLevel=b.dataset.lv;document.querySelectorAll('#nani-level .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));newNani();});
+function newNani(){
+  naniQ=null;
+  $('#nani-hand').innerHTML=`<p class="note">${T('making')}</p>`;$('#nani-info').textContent='';
+  setTimeout(()=>{naniQ={...genNanikiru(naniLevel),done:false,pick:null};renderNani();},20);
+}
+function renderNani(){
+  const q=naniQ;
+  $('#nani-hand').innerHTML=q.hand.map(t=>`<button class="pick cut" data-t="${t}">${tileEl(t)}</button>`).join('');
+  $('#nani-info').textContent=T('naniInfo',{s:shantenText(q.shanten)});
+  $('#nani-fb').innerHTML='';$('#nani-next').hidden=true;
+  $('#nani-hint').innerHTML=glossHTML('nani')+hintArea('nani',q,q.hint||0,q.done);
+  if(!q.done)applyCands('#nani-hand .cut',naniCands(q,q.hint||0));
+  if(q.done)showNani(q.pick,true);
+}
+function showNani(t,redraw){
+  const ev=naniQ.ev,best=ev[0];
+  const isBest=x=>x.shanten===best.shanten&&x.total===best.total;
+  const mine=ev.find(x=>x.tile===t);const gg=grade(naniQ,t),ok=gg>=1.5;
+  let earn='';
+  if(!redraw){stats.nani.n++;if(ok)stats.nani.ok++;saveStats();earn=earnPractice(ok);logEvent('n',gg,naniQ.hint);}
+  $('#nani-hint').innerHTML=hintArea('nani',naniQ,naniQ.hint||0,true);
+  let marked=false;
+  document.querySelectorAll('#nani-hand .cut').forEach(x=>{
+    const e2=ev.find(y=>y.tile===+x.dataset.t);
+    if(isBest(e2))x.classList.add('right');
+    else if(+x.dataset.t===t&&!marked){x.classList.add(ok?'near':'wrong');marked=true;}
+  });
+  const rows=ev.map(x=>`<tr class="${isBest(x)?'best':grade(naniQ,x.tile)===1.5?'nearrow':''} ${x.tile===t?'mine':''}"><td>${tileEl(x.tile,'mini')}</td><td>${shantenText(x.shanten)}</td><td class="num">${T('ukeCell',{k:x.tiles.length,n:x.total})}</td><td><div class="uke">${tilesRow(x.tiles,'micro')}</div></td></tr>`).join('');
+  const detail=T('naniRes',{t:tileLabel(t),s:shantenText(mine.shanten),n:mine.total,b:joinList(ev.filter(isBest).map(x=>tileLabel(x.tile)),'disjunction'),m:best.total});
+  const head=redraw?guide(ok?'happy':'oops',detail,ok?'ok':'ng'):react(ok,detail,gg===1.5?T('nearHead'):ok?'':T('naniHint'),'nani');
+  $('#nani-fb').innerHTML=`${head}${earn}<div class="scroll"><table><thead><tr><th>${T('thDiscard')}</th><th>${T('thShanten')}</th><th>${T('thUke')}</th><th>${T('thTiles')}</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  $('#nani-next').hidden=false;
+}
+$('#nani-hand').addEventListener('click',e=>{
+  const b=e.target.closest('.cut');if(!b||!naniQ||naniQ.done)return;
+  naniQ.done=true;naniQ.pick=+b.dataset.t;showNani(naniQ.pick,false);
+});
+$('#nani-next').addEventListener('click',newNani);
+
+// ===== 豆知識 =====
+const TVCATS=['all','local','rules','abort','world','words','misc'];
+const FREQC={a:'freq-a',b:'freq-b',c:'freq-c'};
+let tvFilter='all',lastDraw=-1;
+function drawTrivia(keep){
+  if(!keep||lastDraw<0){let k;do{k=rnd(TV.length);}while(k===lastDraw&&TV.length>1);lastDraw=k;}
+  const x=TV[lastDraw],L=x[LANG]||x.en;
+  $('#draw').innerHTML=`<span class="chun ${keep?'':'hop'}">${chunSVG(['normal','happy','think'][lastDraw%3])}</span><div class="draw-body"><div class="draw-kind">${T('notebook',{c:T('cats')[x.c]})}</div><h3>${L[0]}</h3><p>${L[1]}</p><button class="btn" id="draw-btn">${T('drawAgain')}</button></div>`;
+}
+function renderTrivia(){
+  $('#tv-filter').innerHTML=TVCATS.map(g=>`<button class="chip" aria-pressed="${g===tvFilter}" data-g="${g}">${g==='all'?T('all'):T('cats')[g]}</button>`).join('');
+  const cats=tvFilter==='all'?TVCATS.slice(1):[tvFilter];
+  $('#tv-list').innerHTML=cats.map(cat=>`<section class="tv-sec"><h3>${T('cats')[cat]}</h3>${TV.filter(x=>x.c===cat).map(x=>{const L=x[LANG]||x.en;return `
+    <article class="tv"><h4>${L[0]}${x.f?`<span class="freq ${FREQC[x.f]}">${T('freq')[x.f]}</span>`:''}</h4><p>${L[1]}</p>${x.ex?`<div class="hand small">${tilesRow(parse(x.ex))}</div>`:''}</article>`;}).join('')}</section>`).join('');
+}
+$('#tv-filter').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;tvFilter=b.dataset.g;renderTrivia();});
+$('#draw').addEventListener('click',e=>{if(e.target.closest('#draw-btn'))drawTrivia(false);});
+
+
+// ===== 道場 =====
+let dojo={i:null,pos:0,tries:{}};
+let dojoDone=new Set();
+try{const OLD=['waits','basics','furiten','defense'];dojoDone=new Set(JSON.parse(localStorage.getItem('jangaku-dojo')||'[]').map(x=>typeof x==='number'?OLD[x]:x));}catch(e){}
+function lineHTML(l,isNew,k){
+  const side=l.s==='chun'?'right':'left';
+  // 手牌が長いとき(ツモの図・実際に切る練習)は吹き出しの下に全幅で出す
+  const tl=l.t?parse(l.t):[];
+  const small=tl.length&&tl.length<=6&&!l.d?`<div class="ltiles">${tilesRow(tl,'mini')}${l.w?`<span class="arrow">→</span>${tilesRow(parse(l.w),'mini hl')}`:''}</div>`:'';
+  let wide='';
+  if(tl.length>6&&!l.d)wide=`<div class="widefig"><div class="hand">${tilesRow(tl)}</div>${l.w?`<div class="ltiles"><span class="arrow">→</span>${tilesRow(parse(l.w),'mini hl')}</div>`:''}</div>`;
+  if(l.melds)wide=`<div class="meldfig">${l.melds.map(([m,sd,cap])=>`<figure>${meldHTML(m,sd)}<figcaption>${T(cap)}</figcaption></figure>`).join('')}</div>`;
+  if(l.d)wide=`<div class="drawfig"><div class="hand">${tilesRow(parse(l.t))}</div><div class="drawn"><div class="hand">${tilesRow(parse(l.d),'hl')}</div><span>${T('drawLbl')}</span></div></div>`;
+  if(l.try){
+    const st=dojo.tries[k]||{};
+    wide=`<div class="hand tryhand">${parse(l.try.hand).map(t=>`<button class="pick cut ${st.solved&&l.try.ans.includes(t)?'right':''} ${st.wrong===t&&!st.solved?'wrong':''}" data-try="${k}" data-t="${t}" ${st.solved?'disabled':''}>${tileEl(t)}</button>`).join('')}</div>`;
+    if(st.solved)wide+=lineHTML({s:'chun',m:'happy',[LANG]:l.try.ok[LANG]||l.try.ok.en},false);
+    else if(st.wrong!=null)wide+=lineHTML({s:'ron',m:'stern',[LANG]:l.try.ng[LANG]||l.try.ng.en},false);
+  }
+  return `<div class="line ${side} who-${l.s} ${isNew?'new':''}"><span class="av">${charSVG(l.s,l.m)}</span><div class="lb"><span class="nm">${T('names')[l.s]}</span><div>${l[LANG]||l.en}</div>${small}</div></div>${wide}`;
+}
+function pendingTry(){
+  if(dojo.i===null)return false;
+  const l=LESSONS[dojo.i].lines[dojo.pos-1];
+  return !!(l&&l.try&&!(dojo.tries[dojo.pos-1]||{}).solved);
+}
+function renderDojo(animateLast){
+  const el=$('#dojo-body');
+  if(dojo.i===null){
+    const ls=LESSONS.map((L,i)=>{
+      const t=L.title[LANG]||L.title.en;const who=[...new Set(L.lines.map(x=>x.s))];
+      return `<button class="lesson" data-lesson="${i}"><span class="ln">${T('lessonN',{n:i+1})}${dojoDone.has(L.id)?` <span class="donebadge">✓ ${T('done')}</span>`:''}</span><b>${t[0]}</b><span class="ld">${t[1]}</span><span class="faces">${who.map(w=>`<span class="av">${charSVG(w,'normal')}</span>`).join('')}</span></button>`;
+    }).join('');
+    const cast=['chun','kan','ron'].map(w=>`<div class="cast"><span class="av">${charSVG(w,w==='kan'?'normal':'happy')}</span><div><b>${T('names')[w]}</b><p>${T('profiles')[w]}</p></div></div>`).join('');
+    el.innerHTML=`<h3 class="sub">${T('lessonsH')}</h3><div class="lessons">${ls}</div><h3 class="sub">${T('castH')}</h3><div class="casts">${cast}</div>`;
+  }else{
+    const L=LESSONS[dojo.i],t=L.title[LANG]||L.title.en;
+    const lines=L.lines.slice(0,dojo.pos).map((l,k)=>lineHTML(l,animateLast&&k===dojo.pos-1,k)).join('');
+    const end=dojo.pos>=L.lines.length;
+    const ctrl=end?`<div class="lesson-end"><b>${T('lessonDone')}</b><div class="row">${L.nextTab?`<button class="btn" data-gotab="${L.nextTab}">${T('goLearn')}</button>`:''}${dojo.i<LESSONS.length-1?`<button class="btn ${L.nextTab?'ghost':''}" data-lesson="${dojo.i+1}">${T('nextLesson')}</button>`:''}<button class="btn ghost" data-gotab="home">${T('toHome')}</button><button class="btn ghost" data-back="1">${T('back')}</button></div></div>`
+      :pendingTry()?`<p class="note tryprompt">${T('tryPrompt')}</p>`
+      :`<div class="row"><button class="btn" id="dojo-next">${T('tapNext')}</button><button class="btn ghost" id="dojo-skip">${T('skip')}</button></div>`;
+    el.innerHTML=`<button class="backlink" data-back="1">← ${T('back')}</button><div class="ln">${T('lessonN',{n:dojo.i+1})}</div><h3 class="lesson-title">${t[0]}</h3><div class="stage" id="stage" aria-live="polite">${lines}</div><div id="dojo-ctrl">${ctrl}</div>`;
+  }
+}
+function groupForward(){
+  const ls=LESSONS[dojo.i].lines;
+  while(dojo.pos<ls.length&&ls[dojo.pos].s===ls[dojo.pos-1].s&&!ls[dojo.pos].try&&!ls[dojo.pos-1].try)dojo.pos++;
+}
+function openLesson(i){dojo={i,pos:1,tries:{}};groupForward();renderDojo(true);}
+function advance(all){
+  const L=LESSONS[dojo.i];
+  if(all)L.lines.forEach((l,k)=>{if(l.try)dojo.tries[k]={solved:true};});
+  dojo.pos=all?L.lines.length:Math.min(L.lines.length,dojo.pos+1);
+  if(!all)groupForward();
+  if(dojo.pos>=L.lines.length){if(!dojoDone.has(L.id))track('lesson-'+L.id);dojoDone.add(L.id);try{localStorage.setItem('jangaku-dojo',JSON.stringify([...dojoDone]));}catch(e){}}
+  renderDojo(!all);
+  const st=$('#stage'),c=$('#dojo-ctrl');const last=st&&st.lastElementChild;(dojo.pos>=LESSONS[dojo.i].lines.length&&c?c:last)?.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+$('#dojo-body').addEventListener('click',e=>{
+  if(e.target.closest('[data-lesson]'))return;
+  const tb=e.target.closest('[data-try]');
+  if(tb){
+    const k=+tb.dataset.try,l=LESSONS[dojo.i].lines[k],t=+tb.dataset.t;
+    dojo.tries[k]=l.try.ans.includes(t)?{solved:true}:{wrong:t};
+    renderDojo(false);
+    const st=$('#stage'),c=$('#dojo-ctrl');const last=st&&st.lastElementChild;(dojo.pos>=LESSONS[dojo.i].lines.length&&c?c:last)?.scrollIntoView({block:'nearest',behavior:'smooth'});
+    return;
+  }
+  const gt=e.target.closest('[data-gotab]');if(gt){showTab(gt.dataset.gotab);window.scrollTo({top:0});return;}
+  if(pendingTry())return;
+  if(e.target.closest('#dojo-skip'))advance(true);
+  else if(e.target.closest('[data-back]')){dojo={i:null,pos:0,tries:{}};renderDojo();window.scrollTo({top:0});}
+  else if(e.target.closest('#dojo-next')||(e.target.closest('#stage')&&dojo.i!==null&&dojo.pos<LESSONS[dojo.i].lines.length))advance(false);
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-lesson]');if(!b)return;
+  showTab('dojo');openLesson(lessonIdx(b.dataset.lesson));
+});
+
+// ===== デイリー何切る =====
+Object.assign(I18N.ja,{
+ tabDaily:"今日の5問",dailyH:"デイリー何切る",
+ dailyGuide:"毎日5問、みんな同じ問題だよ。結果をシェアして友だちと比べよう！カンも毎日挑戦してるチュン。",
+ dailyQ:"第{i}問 / 5",seeResult:"結果を見る",compare:"受け入れを比較する",
+ dGood:"最善手！",dOk:"向聴数はキープ。でも最善は{b}切り。",dBack:"向聴数が戻ってしまった。最善は{b}切り。",
+ resultH:"今日の結果",score:"{s} / 5 問正解",kanScore:"カン：{s} / 5",you:"あなた",
+ kanLose:"くっ、今日はオレの負けだ。明日は負けねえぜ！",kanWin:"ハッ、今日はオレの勝ちだな。カァー！",kanTie:"引き分けか…。明日こそ決着つけるぜ。",
+ chunGood:"やったね！この調子で毎日続けよう。",chunBad:"今日はむずかしかったね。解説を見てふりかえろうチュン。",ronPerfect:"全問正解とは見事じゃ。",
+ played:"プレイ日数",avg:"平均正解",streakL:"連続日数",maxStreak:"最長連続",
+ share:"結果をシェア",copied:"コピーしました！",copyManual:"下の文章をコピーしてシェアしてね。",
+ nextIn:"次の問題まで {t}",reviewH:"今日の問題をふりかえる",yourPick:"あなた",bestPick:"最善",
+ legend:"🟩 最善　🟨 向聴数キープ　🟥 後退",
+ shareHead:"雀学 デイリー何切る #{n} {s}/5",shareVs:"vs カン {k}/5",
+});
+Object.assign(I18N.en,{
+ tabDaily:"Daily",dailyH:"Daily Discard",
+ dailyGuide:"Five puzzles a day, the same for everyone. Share your result and compare with friends! Kan plays every day too. Chirp!",
+ dailyQ:"Puzzle {i} of 5",seeResult:"See results",compare:"Compare acceptance",
+ dGood:"Best move!",dOk:"Same shanten, but discarding {b} is best.",dBack:"That's a step back. Discarding {b} is best.",
+ resultH:"Today's result",score:"{s} / 5 correct",kanScore:"Kan: {s} / 5",you:"You",
+ kanLose:"Tch, you got me today. Tomorrow's mine!",kanWin:"Ha! I win today. Caw!",kanTie:"A tie, huh... Tomorrow we settle it.",
+ chunGood:"Nice work! Let's keep it going every day.",chunBad:"Tough one today. Let's review the answers. Chirp!",ronPerfect:"A perfect score. Splendid.",
+ played:"Played",avg:"Avg. score",streakL:"Streak",maxStreak:"Best streak",
+ share:"Share result",copied:"Copied!",copyManual:"Copy the text below to share.",
+ nextIn:"Next puzzle in {t}",reviewH:"Review today's puzzles",yourPick:"You",bestPick:"Best",
+ legend:"🟩 best  🟨 same shanten  🟥 step back",
+ shareHead:"Jangaku Daily Discard #{n} {s}/5",shareVs:"vs Kan {k}/5",
+});
+Object.assign(I18N.es,{
+ tabDaily:"Diario",dailyH:"Descarte diario",
+ dailyGuide:"Cinco problemas al día, los mismos para todos. ¡Comparte tu resultado con tus amigos! Kan también juega cada día. ¡Pío!",
+ dailyQ:"Problema {i} de 5",seeResult:"Ver resultado",compare:"Comparar aceptación",
+ dGood:"¡La mejor jugada!",dOk:"Mismo shanten, pero lo mejor es descartar {b}.",dBack:"Eso retrocede. Lo mejor es descartar {b}.",
+ resultH:"Resultado de hoy",score:"{s} / 5 aciertos",kanScore:"Kan: {s} / 5",you:"Tú",
+ kanLose:"Bah, hoy me ganaste. ¡Mañana es mío!",kanWin:"¡Ja! Hoy gano yo. ¡Cra!",kanTie:"Empate, ¿eh?... Mañana lo decidimos.",
+ chunGood:"¡Muy bien! Sigamos así cada día.",chunBad:"Hoy fue difícil. Repasemos las respuestas. ¡Pío!",ronPerfect:"Puntuación perfecta. Espléndido.",
+ played:"Jugados",avg:"Media",streakL:"Racha",maxStreak:"Mejor racha",
+ share:"Compartir resultado",copied:"¡Copiado!",copyManual:"Copia el texto de abajo para compartir.",
+ nextIn:"Siguiente en {t}",reviewH:"Repasa los problemas de hoy",yourPick:"Tú",bestPick:"Mejor",
+ legend:"🟩 mejor  🟨 mismo shanten  🟥 retroceso",
+ shareHead:"Jangaku Descarte diario #{n} {s}/5",shareVs:"vs Kan {k}/5",
+});
+
+// ===== Web版の設定 =====
+// feedback: アンケート(Googleフォームなど)のURL。空なら表示しない
+const SITE={hosted:true,feedback:'',beta:true};
+const SHARE_URL=location.protocol.startsWith('http')?location.origin+location.pathname.replace(/index\.html$/,''):'https://jangaku.netlify.app/';
+// アクセス解析のイベント送信(GoatCounterを有効にしたときだけ動く)
+function track(name){try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:name,event:true});}catch(e){}}
+// 初回訪問から何日目に開いたかを、1日1回だけ送る(D1・D7の継続率を見るため。個人を特定する情報は送らない)
+(function(){try{
+  const today=new Date();const key=`${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+  let first=localStorage.getItem('jangaku-first');if(!first){first=String(Date.now());localStorage.setItem('jangaku-first',first);}
+  if(localStorage.getItem('jangaku-lastday')!==key){
+    localStorage.setItem('jangaku-lastday',key);
+    const d=Math.floor((new Date(today.getFullYear(),today.getMonth(),today.getDate())-new Date(new Date(+first).setHours(0,0,0,0)))/86400000);
+    window.addEventListener('load',()=>setTimeout(()=>track('day-'+Math.min(d,30)),1500));
+  }
+}catch(e){}})();
+const DAY0=Date.UTC(2026,8,26);
+function todayKey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function keyToUTC(k){const [y,m,d]=k.split('-').map(Number);return Date.UTC(y,m-1,d);}
+function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function withSeed(seed,fn){const prev=RNG;RNG=mulberry32(seed);try{return fn();}finally{RNG=prev;}}
+
+let daily=null,dailyView=null,dailyTimer=null,dailyStarted=false;
+let dstore={days:{}};
+try{const s=JSON.parse(localStorage.getItem('jangaku-daily')||'null');if(s&&s.days)dstore=s;}catch(e){}
+function saveDaily(){
+  const keys=Object.keys(dstore.days).sort();
+  while(keys.length>400)delete dstore.days[keys.shift()];
+  try{localStorage.setItem('jangaku-daily',JSON.stringify(dstore));}catch(e){}
+}
+function ensureDaily(){
+  const key=todayKey();
+  if(daily&&daily.key===key)return;
+  daily={key,n:Math.round((keyToUTC(key)-DAY0)/86400000)+1,
+    qs:DAILY_LV.map((lv,i)=>withSeed(hashStr(key+'#v2#'+i),()=>genNanikiru(lv))),
+    kanRes:DAILY_LV.map((lv,i)=>withSeed(hashStr(key+'#kan#'+i),()=>rnd(100)<KAN_RATE[lv]))};
+  daily.kan=daily.kanRes.filter(Boolean).length;
+  dailyView=null;
+}
+const DAILY_V=2,DAILY_LV=['easy','medium','medium','hard','hard'],KAN_RATE={easy:90,medium:65,hard:40};
+function rec(){let r=dstore.days[daily.key];if(!r||r.v!==DAILY_V)r=dstore.days[daily.key]={v:DAILY_V,picks:[]};return r;}
+// 2=最善 1.5=準正解(最善との差が2枚以内) 1=向聴数キープ 0=後退
+const NEAR=2;
+function grade(q,t){
+  const best=q.ev[0],m=q.ev.find(x=>x.tile===t);
+  if(!m||m.shanten!==best.shanten)return 0;
+  if(m.total===best.total)return 2;
+  return best.total-m.total<=NEAR?1.5:1;
+}
+function sq(g){return g===2?'🟩':g===1.5?'🟦':g===1?'🟨':'🟥';}
+function bestTiles(q){const b=q.ev[0];return q.ev.filter(x=>x.shanten===b.shanten&&x.total===b.total).map(x=>x.tile);}
+function dailyStats(){
+  const done=Object.keys(dstore.days).filter(k=>(dstore.days[k].picks||[]).length>=5).sort();
+  const played=done.length;
+  const avg=played?done.reduce((a,k)=>a+(dstore.days[k].score||0),0)/played:0;
+  const set=new Set(done);
+  let t=keyToUTC(todayKey());
+  if(!set.has(todayKey()))t-=86400000;
+  const fromUTC=u=>new Date(u).toISOString().slice(0,10);
+  let streak=0;while(set.has(fromUTC(t))){streak++;t-=86400000;}
+  let max=0,run=0,prev=null;
+  for(const k of done){const u=keyToUTC(k);run=(prev!==null&&u-prev===86400000)?run+1:1;max=Math.max(max,run);prev=u;}
+  return {played,avg,streak,max};
+}
+function countdown(){
+  const now=new Date(),next=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+  let s=Math.max(0,Math.floor((next-now)/1000));
+  const h=Math.floor(s/3600),m=Math.floor(s%3600/60);s%=60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function shareText(){
+  const r=rec(),gs=r.picks.map((t,k)=>grade(daily.qs[k],t));
+  return `${T('shareHead',{n:daily.n,s:r.score})}\n${gs.map(sq).join('')}\n${T('shareVs',{k:daily.kan})}${(r.hints||[]).reduce((a,b)=>a+(b||0),0)?` 📜×${(r.hints||[]).reduce((a,b)=>a+(b||0),0)}`:''}\n${SHARE_URL}`;
+}
+
+function renderDaily(){
+  const el=$('#daily-body');
+  if(!daily||daily.key!==todayKey()){
+    el.innerHTML=`<p class="note">${T('making')}</p>`;
+    setTimeout(()=>{ensureDaily();renderDaily();},20);
+    return;
+  }
+  const r=rec();
+  const dateStr=new Date(keyToUTC(daily.key)+43200000).toLocaleDateString(LANG,{month:'long',day:'numeric',weekday:'short',timeZone:'UTC'});
+  const cur=dailyView!==null?dailyView:r.picks.length;
+  const dots=[0,1,2,3,4].map(k=>{const g=k<r.picks.length?grade(daily.qs[k],r.picks[k]):-1;return `<span class="dot g${String(g).replace('.','')} ${k===cur&&cur<5?'cur':''}"></span>`;}).join('');
+  const head=`<div class="dhead"><div><div class="ln">${T('dailyH')} #${daily.n}</div><b>${dateStr}</b></div><div class="dots">${dots}</div></div>`;
+  if(cur>=5){el.innerHTML=head+resultHTML();startTimer();return;}
+  if(r.picks.length===0&&!dailyStarted){
+    el.innerHTML=head+`<div class="block dstart">
+      <h3>${T('dStartTitle')}</h3>
+      <p>${T('dStartDesc')}</p>
+      <div class="lvrow">${DAILY_LV.map((lv,i)=>`<span class="lv lv-${lv}">${i+1}. ${T('lv_'+lv)}</span>`).join('')}</div>
+      <div class="vs small"><div><span class="av">${chunSVG('happy')}</span><span class="vl">${T('you')}</span></div><span class="vsx">vs</span><div><span class="av">${kanSVG('normal')}</span><span class="vl">${T('names').kan}</span></div></div>
+      <p class="note">${T('dStartKan')}</p>
+      <button class="btn share" id="daily-start">${T('dStartBtn')}</button>
+      <p class="note"><button class="link" data-lesson="nanikiru">${T('dStartNew')}</button></p>
+    </div>`;
+    return;
+  }
+  const q=daily.qs[cur],answered=cur<r.picks.length,pick=r.picks[cur];
+  const bt=bestTiles(q),hl=(r.hints||[])[cur]||0,cands=answered?null:naniCands(q,hl);
+  let marked=false;
+  const hand=q.hand.map(t=>{
+    let cls='';
+    if(answered){if(bt.includes(t))cls='right';else if(t===pick&&!marked){cls=grade(q,pick)>=1.5?'near':'wrong';marked=true;}}
+    else if(cands)cls=cands.includes(t)?'glow':'dim';
+    return `<button class="pick cut ${cls}" data-dt="${t}" ${answered?'tabindex="-1"':''}>${tileEl(t)}</button>`;
+  }).join('');
+  let fb='';
+  if(answered){
+    const g=grade(q,pick),b=joinList(bt.map(tileLabel),'disjunction');
+    const msg=g===2?T('dGood'):g===1.5?T('dNear',{b,d:q.ev[0].total-q.ev.find(x=>x.tile===pick).total}):T(g===1?'dOk':'dBack',{b});
+    const m=q.ev.find(x=>x.tile===pick);
+    const detail=T('naniRes',{t:tileLabel(pick),s:shantenText(m.shanten),n:m.total,b,m:q.ev[0].total});
+    const rows=q.ev.map(x=>`<tr class="${bt.includes(x.tile)?'best':''} ${x.tile===pick?'mine':''}"><td>${tileEl(x.tile,'mini')}</td><td>${shantenText(x.shanten)}</td><td class="num">${T('ukeCell',{k:x.tiles.length,n:x.total})}</td><td><div class="uke">${tilesRow(x.tiles,'micro')}</div></td></tr>`).join('');
+    fb='<div role="status">'+guide(g>=1.5?'happy':g===1?'think':'oops',`<b>${msg}</b><br>${detail}`,g>=1.5?'ok':'ng')+'</div>'
+      +`<div class="row"><button class="btn" id="daily-next">${cur===4?T('seeResult'):T('next')}</button></div>`
+      +`<details class="cmp"><summary>${T('compare')}</summary><div class="scroll"><table><thead><tr><th>${T('thDiscard')}</th><th>${T('thShanten')}</th><th>${T('thUke')}</th><th>${T('thTiles')}</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+  }
+  el.innerHTML=head+`<div class="block"><p class="note"><b>${T('dailyQ',{i:cur+1})}</b> <span class="lv lv-${q.level}">${T('lv_'+q.level)}</span>　${T('naniInfo',{s:shantenText(q.shanten)})}</p><div class="hand">${hand}</div>${answered?'':glossHTML('nani')}${hintArea('nani',q,hl,answered)}${fb}</div>`;
+}
+function resultHTML(){
+  const r=rec(),gs=r.picks.map((t,k)=>grade(daily.qs[k],t)),s=r.score,k=daily.kan;
+  const res=s>k?'kanLose':s===k?'kanTie':'kanWin';
+  const st=dailyStats();
+  let chars=guide(s>=3?'happy':'oops',T(s>=3?'chunGood':'chunBad'),s>=3?'ok':'ng')
+    +cameo('kan',res==='kanLose'?'oops':res==='kanWin'?'happy':'normal',T(res));
+  if(s===5)chars+=cameo('ron','happy',T('ronPerfect'));
+  const review=daily.qs.map((q,i)=>{
+    const g=gs[i];
+    return `<div class="rv"><div class="rv-h"><span class="sq">${sq(g)}</span><b>${T('dailyQ',{i:i+1})}</b><span>${T('yourPick')} ${tileEl(r.picks[i],'mini')}</span><span>${T('bestPick')} ${tilesRow(bestTiles(q),'mini')}</span>${(r.hints||[])[i]?`<span>📜${r.hints[i]}</span>`:''}<span class="kanmark">${T('names').kan} ${daily.kanRes[i]?'✓':'✗'}</span></div><div class="hand small">${tilesRow(q.hand)}</div></div>`;
+  }).join('');
+  return `<div class="block dres">
+    <h3>${T('resultH')}</h3>
+    <div class="vs"><div><span class="av">${chunSVG(s>=3?'happy':'oops')}</span><span class="vl">${T('you')}</span><b>${s}</b></div><span class="vsx">vs</span><div><span class="av">${kanSVG(res==='kanWin'?'happy':res==='kanLose'?'oops':'normal')}</span><span class="vl">${T('names').kan}</span><b>${k}</b></div></div>
+    <div class="grid">${gs.map(sq).join('')}</div>
+    <p class="note">${T('legend')}</p>
+    <div class="dstats"><div><b>${st.played}</b><span>${T('played')}</span></div><div><b>${st.avg.toFixed(1)}</b><span>${T('avg')}</span></div><div><b>${st.streak}</b><span>${T('streakL')}</span></div><div><b>${st.max}</b><span>${T('maxStreak')}</span></div></div>
+    <button class="btn share" id="daily-share">${T('share')}</button>
+    <div id="share-fb"></div>
+    ${r.rewarded?`<p class="toast">${T('dailyReward')}</p>`:''}
+    <p class="note" id="countdown">${T('nextIn',{t:countdown()})}</p>
+  </div>
+  ${chars}
+  <h3 class="sub">${T('reviewH')}</h3>${review}`;
+}
+function startTimer(){
+  if(dailyTimer)return;
+  dailyTimer=setInterval(()=>{
+    const el=document.getElementById('countdown');
+    if(daily&&daily.key!==todayKey()&&!$('#daily').hidden){renderDaily();return;}
+    if(el)el.textContent=T('nextIn',{t:countdown()});
+  },1000);
+}
+async function shareDaily(){
+  const text=shareText(),fb=$('#share-fb');
+  // 共有メニューが開かない環境でも必ずコピーできるよう、先に文面を表示しておく
+  fb.innerHTML=`<p class="note">${T('copyManual')}</p><textarea class="sharebox" readonly>${text}</textarea><div class="row" style="justify-content:center"><button class="btn ghost" id="copy-btn">${T('copyBtn')}</button><span id="copy-ok"></span></div>`;
+  try{if(navigator.share)await navigator.share({text});}catch(e){}
+}
+$('#daily-body').addEventListener('click',async e=>{
+  if(e.target.closest('#copy-btn')){
+    const ta=$('#share-fb textarea');let ok=false;
+    try{await navigator.clipboard.writeText(ta.value);ok=true;}catch(err){}
+    if(!ok){ta.focus();ta.select();try{ok=document.execCommand('copy');}catch(err){}}
+    $('#copy-ok').innerHTML=ok?`<span class="copied">${T('copied')}</span>`:'';
+    return;
+  }
+  const c=e.target.closest('[data-dt]');
+  if(c){
+    const r=rec();const cur=dailyView!==null?dailyView:r.picks.length;
+    if(cur!==r.picks.length||cur>=5)return;
+    r.picks.push(+c.dataset.dt);
+    const g=grade(daily.qs[cur],+c.dataset.dt);
+    if(g>=1.5){streak++;}else streak=0;
+    logEvent('d',g,(r.hints||[])[cur]||0);
+    if(r.picks.length>=5){r.score=r.picks.filter((t,k)=>grade(daily.qs[k],t)>=1.5).length;if(!r.rewarded){r.rewarded=true;addScrolls(2);}track('daily-complete');}
+    saveDaily();dailyView=cur;renderDaily();
+    return;
+  }
+  if(e.target.closest('#daily-start')){dailyStarted=true;track('daily-start');renderDaily();return;}
+  if(e.target.closest('#daily-next')){dailyView=null;renderDaily();window.scrollTo({top:$('#daily').offsetTop-60,behavior:'smooth'});return;}
+  if(e.target.closest('#daily-share')){track('daily-share');shareDaily();}
+});
+
+// ===== ヒントの巻物と学習ログ =====
+Object.assign(I18N.ja,{
+ useHint:"📜 ヒントを使う（残り{n}）",noScroll:"巻物がないよ。毎日の5問をクリアするか、練習で5問正解するともらえるチュン。",
+ hintKind:"最善の打牌のひとつは{k}の中にあるぞ。",hint3:"候補を3つに絞ったぞ。光っている牌から選ぶのじゃ。",hint2:"さらに2つに絞ったぞ。",
+ kinds:["萬子","筒子","索子","字牌"],
+ wHintCount:"待ちは{n}種類あるぞ。",wHintOne:"そのうちの1つは{t}じゃ。",wHintTwo:"もう1つは{t}じゃ。",
+ earned:"📜 ヒントの巻物を{n}本手に入れた！",dailyReward:"今日のクリア報酬：📜 × 2",
+});
+Object.assign(I18N.en,{
+ useHint:"📜 Use a hint ({n} left)",noScroll:"No scrolls left. Finish the daily 5, or get 5 practice answers right, to earn more. Chirp!",
+ hintKind:"One of the best discards is among the {k}.",hint3:"I've narrowed it to three candidates. Pick from the glowing tiles.",hint2:"Now it's down to two.",
+ kinds:["man (characters)","pin (circles)","sou (bamboo)","honors"],
+ wHintCount:"There are {n} waits.",wHintOne:"One of them is {t}.",wHintTwo:"Another one is {t}.",
+ earned:"📜 You got {n} hint scroll(s)!",dailyReward:"Today's reward: 📜 × 2",
+});
+Object.assign(I18N.es,{
+ useHint:"📜 Usar pista (quedan {n})",noScroll:"No te quedan pergaminos. Completa el diario o acierta 5 en práctica para conseguir más. ¡Pío!",
+ hintKind:"Uno de los mejores descartes está entre {k}.",hint3:"Lo reduje a tres candidatas. Elige entre las fichas que brillan.",hint2:"Ahora quedan dos.",
+ kinds:["man (caracteres)","pin (círculos)","sou (bambú)","honores"],
+ wHintCount:"Hay {n} esperas.",wHintOne:"Una de ellas es {t}.",wHintTwo:"Otra es {t}.",
+ earned:"📜 ¡Conseguiste {n} pergamino(s) de pista!",dailyReward:"Recompensa de hoy: 📜 × 2",
+});
+
+const SCROLL_CAP=20;
+let items={v:1,scrolls:3,correct:0};
+try{const s=JSON.parse(localStorage.getItem('jangaku-items')||'null');if(s&&typeof s.scrolls==='number')items=Object.assign(items,s);}catch(e){}
+function saveItems(){try{localStorage.setItem('jangaku-items',JSON.stringify(items));}catch(e){}}
+function addScrolls(n){const before=items.scrolls;items.scrolls=Math.min(SCROLL_CAP,items.scrolls+n);saveItems();return items.scrolls-before;}
+function earnPractice(ok){
+  if(!ok)return '';
+  items.correct++;saveItems();
+  if(items.correct%5===0){const got=addScrolls(1);if(got)return `<p class="toast">${T('earned',{n:got})}</p>`;}
+  return '';
+}
+
+// 将来のポイント・帯・リーグ用に、回答の記録を端末に残しておく
+// 形式: [時刻(秒), モード(d=デイリー n=何切る w=待ち q=名前), 評価(2=最善 1=向聴キープ 0=誤り), ヒント段階]
+const LOG_CAP=3000;
+function logEvent(mode,grade,hint){
+  try{
+    const log=JSON.parse(localStorage.getItem('jangaku-log')||'[]');
+    log.push([Math.floor(Date.now()/1000),mode,grade,hint||0]);
+    while(log.length>LOG_CAP)log.shift();
+    localStorage.setItem('jangaku-log',JSON.stringify(log));
+  }catch(e){}
+}
+
+function kindOf(t){return t<27?Math.floor(t/9):3;}
+function naniCands(q,level){
+  if(level<2)return null;
+  const bt=bestTiles(q),n=Math.max(level===2?3:2,bt.length),out=[];
+  for(const e of q.ev){if(out.length>=n)break;out.push(e.tile);}
+  return out;
+}
+function hintMsg(kind,q,l){
+  if(kind==='wait'){
+    if(l===1)return T('wHintCount',{n:q.waits.length});
+    return T(l===2?'wHintOne':'wHintTwo',{t:tileLabel(q.waits[l-2])});
+  }
+  if(l===1)return T('hintKind',{k:T('kinds')[kindOf(bestTiles(q)[0])]});
+  return T(l===2?'hint3':'hint2');
+}
+function hintArea(kind,q,level,done){
+  const max=kind==='wait'?Math.min(3,1+q.waits.length):3;
+  const msgs=[];for(let l=1;l<=level;l++)msgs.push(hintMsg(kind,q,l));
+  let html=msgs.length?cameo('ron','think',msgs.join('<br>')):'';
+  if(!done&&level<max){
+    const n=items.scrolls;
+    html+=`<div class="row"><button class="btn ghost hint" data-hint="${kind}" ${n?'':'disabled'}>${T('useHint',{n})}</button></div>${n?'':`<p class="note">${T('noScroll')}</p>`}`;
+  }
+  return html;
+}
+function applyCands(sel,cands){
+  if(!cands)return;
+  document.querySelectorAll(sel).forEach(b=>{const t=+(b.dataset.t??b.dataset.dt);b.classList.add(cands.includes(t)?'glow':'dim');});
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-hint]');if(!b||items.scrolls<1)return;
+  const kind=b.dataset.hint,panel=b.closest('.panel').id;
+  if(panel==='daily'){
+    const r=rec(),cur=r.picks.length;if(cur>=5)return;
+    r.hints=r.hints||[];r.hints[cur]=(r.hints[cur]||0)+1;saveDaily();
+    items.scrolls--;saveItems();renderDaily();
+  }else if(kind==='nani'&&naniQ&&!naniQ.done){
+    naniQ.hint=(naniQ.hint||0)+1;items.scrolls--;saveItems();renderNani();
+  }else if(kind==='wait'&&waitQ&&!waitQ.done){
+    waitQ.hint=(waitQ.hint||0)+1;items.scrolls--;saveItems();renderWait();
+  }
+});
+
+// ===== 用語の説明 =====
+function glossHTML(kind){return `<details class="gloss"><summary>${T('glossSum')}</summary><div>${T(kind==='wait'?'glossWait':'glossNani')}<br><button class="link" data-lesson="${kind==='wait'?'waits':'shanten'}">${T('lessonLink',{t:(LESSONS[lessonIdx(kind==='wait'?'waits':'shanten')].title[LANG]||LESSONS[0].title.en)[0]})}</button></div></details>`;}
+
+// ===== 初回の案内 =====
+let userLevel=null;
+try{userLevel=localStorage.getItem('jangaku-level');}catch(e){}
+function renderWelcome(){
+  const opts=[['new','lesson:game'],['basic','dojo'],['pro','daily']];
+  $('#welcome-body').innerHTML=`<div class="wel-cast">${['chun','kan','ron'].map(w=>`<span class="av">${charSVG(w,w==='kan'?'normal':'happy')}</span>`).join('')}</div>
+    <p class="lead" style="text-align:center">${T('welSay')}</p>
+    <h3 class="sub">${T('welQ')}</h3>
+    <div class="welopts">${opts.map(([k,tab])=>`<button class="welopt" data-level="${k}" data-go="${tab}"><b>${T('wel_'+k)}</b><span>${T('wel_'+k+'_d')}</span></button>`).join('')}</div>`;
+}
+function applyLevel(){
+  if(!userLevel)return;
+  naniLevel={new:'easy',basic:'medium',pro:'hard'}[userLevel]||'medium';
+  document.querySelectorAll('#nani-level .chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.lv===naniLevel));
+}
+$('#welcome-body').addEventListener('click',e=>{
+  const b=e.target.closest('.welopt');if(!b)return;
+  userLevel=b.dataset.level;try{localStorage.setItem('jangaku-level',userLevel);}catch(err){}track('level-'+userLevel);
+  applyLevel();setCompact();
+  if(b.dataset.go.startsWith('lesson:')){showTab('dojo');openLesson(lessonIdx(b.dataset.go.slice(7)));}
+  else showTab(b.dataset.go);
+});
+
+
+// ===== ホーム =====
+const PATH=[
+ {k:'game',lesson:'game'},
+ {k:'tiles',tab:'learn',scroll:'name-block',done:()=>stats.name.ok>=10},
+ {k:'nanikiru',lesson:'nanikiru'},
+ {k:'shanten',lesson:'shanten'},
+ {k:'daily',tab:'daily',done:()=>Object.values(dstore.days).some(d=>(d.picks||[]).length>=5)},
+ {k:'waits',lesson:'waits'},
+ {k:'waitq',tab:'wait',done:()=>stats.wait.n>=10},
+ {k:'naniq',tab:'nani',done:()=>stats.nani.n>=10},
+];
+function stepDone(st){return st.lesson?dojoDone.has(st.lesson):st.done();}
+function stepText(st){
+  if(st.lesson){const t=LESSONS[lessonIdx(st.lesson)].title;const L=t[LANG]||t.en;return [L[0],`${L[1]}（${T('tabDojo')}）`];}
+  return [T('st_'+st.k),T('st_'+st.k+'_d')];
+}
+function stepAttr(st){return st.lesson?`data-lesson="${st.lesson}"`:`data-gotab="${st.tab}"${st.scroll?` data-scroll="${st.scroll}"`:''}`;}
+function dailyDoneToday(){const r=dstore.days[todayKey()];return !!(r&&r.v===DAILY_V&&(r.picks||[]).length>=5);}
+function renderHome(){
+  const doneToday=dailyDoneToday(),r=dstore.days[todayKey()];
+  const allDone=PATH.every(stepDone),nextIdx=PATH.findIndex(x=>!stepDone(x));
+  let card;
+  if((userLevel==='pro'||allDone)&&!doneToday)card={t:T('dStartTitle'),d:T('homeDailyD'),attr:'data-gotab="daily"',mood:'happy'};
+  else if(nextIdx>=0){const [t,d]=stepText(PATH[nextIdx]);card={t,d,attr:stepAttr(PATH[nextIdx]),mood:'normal'};}
+  else card={t:T('homeMoreT'),d:T('homeMoreD'),attr:'data-gotab="nani"',mood:'think'};
+  const st=dailyStats();
+  const cardIsDaily=card.attr==='data-gotab="daily"';
+  const daily=cardIsDaily?'':doneToday
+    ?`<div class="dailyrow done"><span>✓ ${T('homeDailyDone',{s:r.score})}</span><span class="note">${st.streak>1?T('homeStreak',{n:st.streak})+'　':''}${T('nextIn',{t:countdown()})}</span></div>`
+    :`<button class="dailyrow" data-gotab="daily"><span><b>${T('tabDaily')}</b>　${T('homeDailyNot')}</span><span class="go">→</span></button>`;
+  const doneN=PATH.filter(stepDone).length;
+  const steps=PATH.map((x,i)=>{const d=stepDone(x),[t,ds]=stepText(x);return `<button class="step ${d?'done':''} ${i===nextIdx?'next':''}" ${stepAttr(x)}><span class="num">${d?'✓':i+1}</span><span class="st"><b>${t}</b><span>${ds}</span></span>${i===nextIdx?`<span class="nextbadge">${T('nextBadge')}</span>`:''}</button>`;}).join('');
+  const more=[['dojo','ron','tabDojo','m_dojo'],['nani',null,'tabNani','m_nani',13],['wait',null,'tabWait','m_wait',22],['yaku',null,'tabYaku','m_yaku',33],['learn',null,'tabLearn','m_learn',27],['trivia','kan','tabTrivia','m_trivia']]
+    .map(([tab,ch,lb,ds,tile])=>`<button class="more" data-gotab="${tab}"><span class="ic">${ch?`<span class="av">${charSVG(ch,'happy')}</span>`:tileEl(tile)}</span><b>${T(lb)}</b><span>${T(ds)}</span></button>`).join('');
+  $('#home-body').innerHTML=`
+    <div class="nextcard">
+      <div class="nc-head"><span class="av">${chunSVG(card.mood)}</span><div><div class="nc-label">${T('nextUp')}</div><b>${card.t}</b><span>${card.d}</span></div></div>
+      <button class="btn share" ${card.attr}>${T('letsGo')}</button>
+    </div>
+    ${daily}
+    <details class="road" ${userLevel==='pro'||allDone?'':'open'}><summary><b>${T('pathH')}</b><span class="note">${T('pathDone',{d:doneN,n:PATH.length})}</span></summary><div class="steps">${steps}</div></details>
+    <h3 class="sub">${T('tableH')}</h3>
+    <p class="note">${T('tableIntro')}</p>
+    <div class="mores tablecards">${[['score','ron','tabScore','m_score'],['riipai',null,'tabRiipai','m_riipai',0],['manner','kan','tabManner','m_manner']].map(([tab,ch,lb,ds,tile])=>`<button class="more" data-gotab="${tab}"><span class="ic">${ch?`<span class="av">${charSVG(ch,'normal')}</span>`:tileEl(tile)}</span><b>${T(lb)}</b><span>${T(ds)}</span></button>`).join('')}</div>
+    <h3 class="sub">${T('moreH')}</h3>
+    <div class="mores">${more}</div>
+    ${SITE.hosted?`<div class="foot">${SITE.feedback?`<a class="link" href="${SITE.feedback}" target="_blank" rel="noopener">${T('feedbackLink')}</a>`:''}<a class="link" href="privacy.html">${T('privacyLink')}</a></div>`:''}`;
+}
+document.addEventListener('click',e=>{
+  const sb=e.target.closest('[data-sub]');if(sb){showTab(sb.dataset.sub);return;}
+  const gt=e.target.closest('[data-gotab]');
+  if(gt&&!gt.closest('#dojo-body')){
+    showTab(gt.dataset.gotab);
+    const sc=gt.dataset.scroll&&document.getElementById(gt.dataset.scroll);
+    if(sc)setTimeout(()=>sc.scrollIntoView({block:'start',behavior:'smooth'}),30);
+  }
+});
+
+// ===== 実戦準備(卓に座る前の練習) =====
+Object.assign(I18N.ja,{
+ tabTable:"実戦準備",tabScore:"点数計算",tabRiipai:"理牌",tabManner:"鳴きの作法",
+ tableH:"卓に座る前の準備",
+ scoreH:"点数計算の練習",scoreGuide:"雀荘や友だちとの対局では、アガった人が自分で点数を言うんだ。オンラインなら自動でやってくれることを、自分でできるようにしようチュン。",
+ lv_limit:"満貫以上",lv_basic:"30符・40符",lv_all:"すべて",
+ ko:"子",oya:"親",ron:"ロン",tsumo:"ツモ",hanfu:"{h}翻 {f}符",hanOnly:"{h}翻",
+ scoreQ:"ロン：もらえる点数は？",scoreQTsumo:"ツモ：子と親がそれぞれ払う点数は？",scoreQAll:"ツモ：ほかの3人がそれぞれ払う点数は？",
+ ptRon:"{v}点",ptAll:"{v}点オール",ptSplit:"子{a}・親{b}点",
+ lim_mangan:"満貫",lim_haneman:"跳満",lim_baiman:"倍満",lim_sanbaiman:"三倍満",lim_yakuman:"役満",
+ exLimit:"{h}翻は{name}。基本点は{b}点。",exOver:"符{f}×2の{e}乗＝{raw}点が2,000点を超えるので満貫。基本点は2,000点。",
+ exBase:"符{f}×2の{e}乗＝基本点{b}点。",exRon:"{who}のロンは基本点×{m}＝{raw}点。100点単位に切り上げて{v}点。",
+ exSplit:"子は基本点×1（{b}→{ko}点）、親は×2（{b2}→{oy}点）を払う。",exAll:"3人がそれぞれ基本点×2（{b2}→{v}点）を払う。",
+ scoreFoot:"4翻30符と3翻60符を満貫として扱う「切り上げ満貫」を採用する店もあります。ここでは採用していません。本場や供託は含みません。",
+ riipaiH:"理牌(リーパイ)の練習",riipaiGuide:"配られた牌を、萬子→筒子→索子→字牌の順に、小さい数字から並べよう。小さい順にタップしてね。速く並べられると、自分の番で焦らないチュン。",
+ rpSorted:"並べた牌",rpLeft:"配られた牌（小さい順にタップ）",rpMiss:"ミス {n}",rpDone:"{t}秒・ミス{m}回",rpBest:"自己ベスト {t}秒",rpNew:"自己ベスト更新！",rpAgain:"もう一度",
+ rpNote:"並べ方に決まりはありませんが、この順番が一般的です。字牌は東南西北白發中の順にしています。",
+ rpTip:"上級者の中には、手を読まれないように、あえて完全には並べない人もおる。まずは速く正確に並べられるようになるのじゃ。",
+ mannerH:"鳴きの作法クイズ",mannerGuide:"ポン・チーの手順や、鳴いた牌の置き方を確かめよう。知らないと、卓で恥ずかしい思いをすることもあるチュン。",
+ mQ:"{i} / {n}",mResult:"{s} / {n} 問正解",mAgain:"もう一度",mPerfect:"全問正解！これで卓でも安心じゃ。",
+ fromLeft:"上家から",fromAcross:"対面から",fromRight:"下家から",
+ ronScore:"まずは5翻以上（満貫・跳満…）から覚えるのじゃ。符が関係ないぶん簡単じゃ。",ronManner:"卓では、迷ったら声を出す前に考える。それが一番の作法じゃ。",
+ m_score:"アガったら自分で点数を言える",m_riipai:"配牌をすばやく並べる",m_manner:"鳴くときの手順と置き方",
+ tableIntro:"オンラインでは自動、雀荘では自分で。卓に座る前に練習しよう。",
+});
+Object.assign(I18N.en,{
+ tabTable:"Table prep",tabScore:"Scoring",tabRiipai:"Sorting",tabManner:"Call etiquette",
+ tableH:"Before you sit at a table",
+ scoreH:"Scoring practice",scoreGuide:"At a parlor or a friend's table, the winner announces their own score. Learn to do yourself what online games do for you. Chirp!",
+ lv_limit:"Mangan+",lv_basic:"30 & 40 fu",lv_all:"All",
+ ko:"Non-dealer",oya:"Dealer",ron:"Ron",tsumo:"Tsumo",hanfu:"{h} han {f} fu",hanOnly:"{h} han",
+ scoreQ:"Ron: how many points do you get?",scoreQTsumo:"Tsumo: what do the non-dealers and the dealer each pay?",scoreQAll:"Tsumo: what does each of the other three pay?",
+ ptRon:"{v}",ptAll:"{v} all",ptSplit:"{a} / {b} (dealer)",
+ lim_mangan:"mangan",lim_haneman:"haneman",lim_baiman:"baiman",lim_sanbaiman:"sanbaiman",lim_yakuman:"yakuman",
+ exLimit:"{h} han is {name}. Base points: {b}.",exOver:"{f} fu × 2^{e} = {raw}, which is over 2,000, so it's mangan. Base points: 2,000.",
+ exBase:"{f} fu × 2^{e} = {b} base points.",exRon:"A {who} ron pays base × {m} = {raw}, rounded up to the next 100: {v}.",
+ exSplit:"Each non-dealer pays base × 1 ({b} → {ko}), and the dealer pays × 2 ({b2} → {oy}).",exAll:"Each of the three pays base × 2 ({b2} → {v}).",
+ scoreFoot:"Some parlors round 4 han 30 fu and 3 han 60 fu up to mangan (kiriage mangan). This practice doesn't. Honba and riichi sticks aren't included.",
+ riipaiH:"Sorting practice",riipaiGuide:"Sort your dealt tiles: characters, then circles, then bamboo, then honors, lowest number first. Tap them in order. Sorting fast keeps you calm on your turn. Chirp!",
+ rpSorted:"Sorted",rpLeft:"Dealt tiles (tap in order)",rpMiss:"Misses: {n}",rpDone:"{t} s, {m} miss(es)",rpBest:"Best: {t} s",rpNew:"New personal best!",rpAgain:"Again",
+ rpNote:"There's no fixed rule for sorting, but this order is the most common. Honors go East, South, West, North, White, Green, Red.",
+ rpTip:"Some advanced players avoid sorting perfectly so others can't read their hand. First, learn to sort quickly and accurately.",
+ mannerH:"Call etiquette quiz",mannerGuide:"Check the steps for pon and chii, and where your called tiles go. Getting these wrong at a real table can be embarrassing. Chirp!",
+ mQ:"{i} of {n}",mResult:"{s} of {n} correct",mAgain:"Again",mPerfect:"All correct! You're ready for a real table.",
+ fromLeft:"From left",fromAcross:"From across",fromRight:"From right",
+ ronScore:"Start with 5 han and up (mangan, haneman...). Fu doesn't matter there, so it's easier.",ronManner:"At the table, think before you speak. That's the first rule of etiquette.",
+ m_score:"Announce your own score",m_riipai:"Sort your starting hand fast",m_manner:"How to call and place tiles",
+ tableIntro:"Online it's automatic; at a real table it's up to you. Practice first.",
+});
+Object.assign(I18N.es,{
+ tabTable:"Mesa",tabScore:"Puntos",tabRiipai:"Ordenar",tabManner:"Modales",
+ tableH:"Antes de sentarte a la mesa",
+ scoreH:"Práctica de puntuación",scoreGuide:"En un salón o en casa de amigos, quien gana anuncia sus propios puntos. Aprende a hacer tú lo que el juego en línea hace por ti. ¡Pío!",
+ lv_limit:"Mangan o más",lv_basic:"30 y 40 fu",lv_all:"Todo",
+ ko:"No repartidor",oya:"Repartidor",ron:"Ron",tsumo:"Tsumo",hanfu:"{h} han {f} fu",hanOnly:"{h} han",
+ scoreQ:"Ron: ¿cuántos puntos cobras?",scoreQTsumo:"Tsumo: ¿cuánto paga cada no repartidor y el repartidor?",scoreQAll:"Tsumo: ¿cuánto paga cada uno de los otros tres?",
+ ptRon:"{v}",ptAll:"{v} cada uno",ptSplit:"{a} / {b} (repartidor)",
+ lim_mangan:"mangan",lim_haneman:"haneman",lim_baiman:"baiman",lim_sanbaiman:"sanbaiman",lim_yakuman:"yakuman",
+ exLimit:"{h} han es {name}. Puntos base: {b}.",exOver:"{f} fu × 2^{e} = {raw}, que supera 2.000, así que es mangan. Puntos base: 2.000.",
+ exBase:"{f} fu × 2^{e} = {b} puntos base.",exRon:"Un ron de {who} paga base × {m} = {raw}, redondeado hacia arriba a la centena: {v}.",
+ exSplit:"Cada no repartidor paga base × 1 ({b} → {ko}) y el repartidor × 2 ({b2} → {oy}).",exAll:"Cada uno de los tres paga base × 2 ({b2} → {v}).",
+ scoreFoot:"Algunos salones redondean 4 han 30 fu y 3 han 60 fu a mangan (kiriage mangan). Esta práctica no lo hace. No incluye honba ni depósitos de riichi.",
+ riipaiH:"Práctica de ordenar",riipaiGuide:"Ordena tus fichas: caracteres, círculos, bambú y honores, de menor a mayor. Tócalas en orden. Ordenar rápido te mantiene tranquilo en tu turno. ¡Pío!",
+ rpSorted:"Ordenadas",rpLeft:"Fichas repartidas (toca en orden)",rpMiss:"Fallos: {n}",rpDone:"{t} s, {m} fallo(s)",rpBest:"Mejor: {t} s",rpNew:"¡Nuevo récord personal!",rpAgain:"Otra vez",
+ rpNote:"No hay una regla fija para ordenar, pero este orden es el más común. Los honores van Este, Sur, Oeste, Norte, Blanco, Verde, Rojo.",
+ rpTip:"Algunos jugadores avanzados no ordenan del todo para que no les lean la mano. Primero, aprende a ordenar rápido y bien.",
+ mannerH:"Quiz de modales al llamar",mannerGuide:"Repasa los pasos de pon y chii y dónde van las fichas llamadas. Equivocarse en una mesa real puede dar vergüenza. ¡Pío!",
+ mQ:"{i} de {n}",mResult:"{s} de {n} correctas",mAgain:"Otra vez",mPerfect:"¡Todo correcto! Ya estás listo para una mesa real.",
+ fromLeft:"De la izquierda",fromAcross:"De enfrente",fromRight:"De la derecha",
+ ronScore:"Empieza por 5 han o más (mangan, haneman...). Ahí el fu no importa, así que es más fácil.",ronManner:"En la mesa, piensa antes de hablar. Esa es la primera regla de etiqueta.",
+ m_score:"Anuncia tus propios puntos",m_riipai:"Ordena tu mano inicial rápido",m_manner:"Cómo llamar y colocar fichas",
+ tableIntro:"En línea es automático; en una mesa real depende de ti. Practica antes.",
+});
+
+// --- 道場のレッスン2つを追加 ---
+LESSONS.push(
+{id:"score",title:{ja:["点数の数え方","翻と符、満貫まで"],en:["How scoring works","Han, fu and mangan"],es:["Cómo se puntúa","Han, fu y mangan"]},lines:[
+ {s:"chun",m:"think",ja:"アガったら、点数はどうやって決まるの？",en:"When you win, how are points decided?",es:"Cuando ganas, ¿cómo se deciden los puntos?"},
+ {s:"ron",m:"normal",ja:"「翻(ハン)」と「符(フ)」の2つで決まる。翻は役やドラの合計、符は手の形やアガり方で決まる細かい点じゃ。",en:"By two numbers: han and fu. Han is the total from yaku and dora; fu is a finer score from your hand's shape and how you won.",es:"Por dos números: han y fu. El han es la suma de yaku y dora; el fu es un puntaje más fino según la forma de la mano y cómo ganaste."},
+ {s:"kan",m:"happy",ja:"オンラインだと勝手に計算してくれるから、覚えなくていいだろ？",en:"Online games calculate it for you. Why learn it?",es:"Los juegos en línea lo calculan solos. ¿Para qué aprenderlo?"},
+ {s:"ron",m:"stern",ja:"雀荘や友だちとの対局では、アガった本人が点数を申告するのじゃ。言えないと場が止まってしまうぞ。",en:"At a parlor or a friend's table, the winner announces their own score. If you can't, the game grinds to a halt.",es:"En un salón o en casa de amigos, quien gana anuncia sus puntos. Si no sabes, la partida se detiene."},
+ {s:"ron",m:"normal",ja:"まずは5翻以上を覚えるとよい。符に関係なく、5翻は満貫、6〜7翻は跳満、8〜10翻は倍満、11〜12翻は三倍満、13翻以上は役満じゃ。",en:"Start with 5 han and up, where fu doesn't matter: 5 han is mangan, 6–7 haneman, 8–10 baiman, 11–12 sanbaiman, and 13+ yakuman.",es:"Empieza por 5 han o más, donde el fu no importa: 5 han es mangan, 6–7 haneman, 8–10 baiman, 11–12 sanbaiman y 13 o más, yakuman."},
+ {s:"chun",m:"think",ja:"満貫は何点？",en:"How much is a mangan?",es:"¿Cuánto vale un mangan?"},
+ {s:"ron",m:"normal",ja:"子がロンでアガれば8,000点、親なら12,000点。親の点数は子の1.5倍じゃ。",en:"8,000 for a non-dealer ron, 12,000 for the dealer. The dealer gets 1.5 times as much.",es:"8.000 si gana por ron un no repartidor y 12.000 el repartidor. El repartidor cobra 1,5 veces más."},
+ {s:"ron",m:"normal",ja:"4翻以下は符も使う。基本点＝符×2の(翻＋2)乗。子のロンは基本点×4、親のロンは×6を、100点単位に切り上げるのじゃ。",en:"Below 5 han, fu matters too. Base points = fu × 2^(han+2). A non-dealer ron pays base × 4, a dealer ron base × 6, rounded up to the next 100.",es:"Con menos de 5 han, el fu también cuenta. Puntos base = fu × 2^(han+2). Un ron de no repartidor paga base × 4, y de repartidor, base × 6, redondeado hacia arriba a la centena."},
+ {s:"kan",m:"oops",ja:"うげっ、計算が面倒だな…",en:"Ugh, that's a lot of math...",es:"Uf, eso es mucha cuenta..."},
+ {s:"chun",m:"happy",ja:"よく出る30符と40符を覚えれば大丈夫！「実戦準備」の点数計算で練習しようチュン。",en:"Learn the common 30 and 40 fu cases and you're set! Let's practice in Table prep. Chirp!",es:"¡Con aprender los casos comunes de 30 y 40 fu basta! Practiquemos en Mesa. ¡Pío!"},
+]},
+{id:"naki",title:{ja:["鳴きの所作","ポン・チーの手順と置き方"],en:["Calling etiquette","How to pon, chii and place tiles"],es:["Etiqueta al llamar","Cómo hacer pon, chii y colocar fichas"]},lines:[
+ {s:"kan",m:"happy",ja:"ポン！…って言いながら、もう牌を捨てちまったぜ。",en:"Pon! ...I said it while I was already discarding. Caw!",es:"¡Pon! ...lo dije mientras ya descartaba. ¡Cra!"},
+ {s:"ron",m:"stern",ja:"順番が逆じゃ。まずはっきり発声。次に手牌から牌を見せて、鳴いた牌と並べる。それから1枚切るのじゃ。",en:"That's backwards. First call it out clearly. Then reveal the tiles from your hand and set them with the called tile. Only then discard.",es:"Al revés. Primero anúncialo claro. Luego muestra las fichas de tu mano y colócalas con la ficha llamada. Solo después descarta."},
+ {s:"chun",m:"think",ja:"鳴いた牌はどこに置くの？",en:"Where do the called tiles go?",es:"¿Dónde se ponen las fichas llamadas?"},
+ {s:"ron",m:"normal",melds:[["555p",0,"fromLeft"],["555p",1,"fromAcross"],["555p",2,"fromRight"]],ja:"手牌の右側に置く。鳴いた牌は横向きにして、誰から鳴いたかを示すのじゃ。左の人(上家)からなら左端、正面(対面)なら真ん中、右の人(下家)なら右端じゃ。",en:"To the right of your hand. Turn the called tile sideways to show who it came from: left end for the player on your left, middle for the player across, right end for the player on your right.",es:"A la derecha de tu mano. Gira la ficha llamada de lado para indicar de quién vino: a la izquierda si es del jugador de tu izquierda, en el medio si es de enfrente y a la derecha si es del jugador de tu derecha."},
+ {s:"kan",m:"normal",ja:"チーも誰からでもできるんだろ？",en:"And I can chii from anyone, right?",es:"¿Y puedo hacer chii de cualquiera, verdad?"},
+ {s:"ron",m:"stern",ja:"チーは左の人(上家)が捨てた牌だけじゃ。ポンとカンは誰からでもできる。",en:"Chii only works on the tile discarded by the player on your left. Pon and kan work from anyone.",es:"El chii solo vale con la ficha que descarta el jugador de tu izquierda. Pon y kan, de cualquiera."},
+ {s:"chun",m:"think",ja:"同時に何人かが鳴いたら？",en:"What if several people call at once?",es:"¿Y si varios llaman a la vez?"},
+ {s:"ron",m:"normal",ja:"ロンが一番強く、次にポンとカン、最後がチーじゃ。それと、鳴いた直後に同じ牌を切る「喰い替え」は、多くのルールで禁止じゃ。",en:"Ron beats everything, then pon and kan, then chii. Also, discarding the same tile right after calling it (kuikae) is banned under most rules.",es:"El ron gana a todo, luego pon y kan, y al final chii. Además, descartar la misma ficha justo después de llamarla (kuikae) está prohibido en la mayoría de reglas."},
+ {s:"kan",m:"oops",ja:"発声してから、やっぱりやめたら？",en:"What if I call and then change my mind?",es:"¿Y si llamo y luego me arrepiento?"},
+ {s:"ron",m:"stern",ja:"ルールによっては罰則がある。迷ったら、声を出す前に考えるのじゃ。",en:"Some rules penalize that. If you're unsure, think before you speak.",es:"Algunas reglas lo penalizan. Si dudas, piensa antes de hablar."},
+ {s:"chun",m:"happy",ja:"「実戦準備」の作法クイズで確かめようチュン！",en:"Let's test it in the etiquette quiz in Table prep! Chirp!",es:"¡Comprobémoslo en el quiz de modales de Mesa! ¡Pío!"},
+]});
+
+// --- 鳴いた牌の並び(横向きの牌つき) ---
+function meldHTML(str,side){
+  return `<span class="meld">${parse(str).map((t,i)=>i===side?`<span class="sidew">${tileEl(t)}</span>`:tileEl(t)).join('')}</span>`;
+}
+
+// --- 点数計算 ---
+const up100=x=>Math.ceil(x/100)*100;
+function basePts(han,fu){
+  if(han>=13)return [8000,'yakuman'];if(han>=11)return [6000,'sanbaiman'];if(han>=8)return [4000,'baiman'];if(han>=6)return [3000,'haneman'];
+  if(han>=5)return [2000,'mangan'];
+  const b=fu*Math.pow(2,han+2);return b>2000?[2000,'over']:[b,null];
+}
+function payment(han,fu,dealer,tsumo){
+  const [b,lim]=basePts(han,fu);
+  if(!tsumo)return {kind:'ron',v:up100(b*(dealer?6:4)),b,lim};
+  if(dealer)return {kind:'all',v:up100(b*2),b,lim};
+  return {kind:'split',ko:up100(b),oya:up100(b*2),b,lim};
+}
+function fmtN(n){return n.toLocaleString(LANG==='es'?'es-ES':LANG==='en'?'en-US':'ja-JP');}
+function payStr(p){if(p.kind==='ron')return T('ptRon',{v:fmtN(p.v)});if(p.kind==='all')return T('ptAll',{v:fmtN(p.v)});return T('ptSplit',{a:fmtN(p.ko),b:fmtN(p.oya)});}
+let scoreQ=null,scoreLevel='limit';
+function genScore(level){
+  const dealer=Math.random()<.35,tsumo=Math.random()<.45;
+  let han,fu;
+  if(level==='limit'){han=5+rnd(9);fu=30;}
+  else if(level==='basic'){han=1+rnd(4);fu=[30,40][rnd(2)];}
+  else{
+    for(;;){fu=[20,25,30,30,40,40,50,60,70][rnd(9)];han=1+rnd(6);if(fu===20&&(!tsumo||han<2))continue;if(fu===25&&han<2)continue;break;}
+  }
+  return {han,fu,dealer,tsumo,level};
+}
+function scoreOptions(q){
+  const rp0=payment(q.han,q.fu,q.dealer,q.tsumo),right=payStr(rp0);
+  const num=p=>p.kind==='split'?p.ko*2+p.oya:p.v;
+  // 実際にありうる点数の中から、正解に近い額を選択肢にする
+  const pool=new Map();
+  const addP=p=>{const k=payStr(p);if(k!==right&&!pool.has(k))pool.set(k,Math.abs(num(p)-num(rp0)));};
+  for(let h=1;h<=13;h++)for(const f of [20,25,30,40,50,60,70]){
+    if(f===20&&(!q.tsumo||h<2))continue;if(f===25&&h<2)continue;
+    addP(payment(h,f,q.dealer,q.tsumo));
+  }
+  addP(payment(q.han,q.fu,!q.dealer,q.tsumo));
+  const near=[...pool.entries()].sort((x,y)=>x[1]-y[1]).slice(0,5).map(x=>x[0]);
+  shuffle(near);
+  return {right,opts:shuffle([right,...near.slice(0,3)])};
+}
+function scoreExplain(q){
+  const p=payment(q.han,q.fu,q.dealer,q.tsumo),e=q.han+2,raw=q.fu*Math.pow(2,e);
+  let s;
+  if(p.lim==='over')s=T('exOver',{f:q.fu,e,raw:fmtN(raw)});
+  else if(p.lim)s=T('exLimit',{h:q.han,name:T('lim_'+p.lim),b:fmtN(p.b)});
+  else s=T('exBase',{f:q.fu,e,b:fmtN(p.b)});
+  if(p.kind==='ron'){const m=q.dealer?6:4;s+=' '+T('exRon',{who:T(q.dealer?'oya':'ko'),m,raw:fmtN(p.b*m),v:fmtN(p.v)});}
+  else if(p.kind==='split')s+=' '+T('exSplit',{b:fmtN(p.b),ko:fmtN(p.ko),b2:fmtN(p.b*2),oy:fmtN(p.oya)});
+  else s+=' '+T('exAll',{b2:fmtN(p.b*2),v:fmtN(p.v)});
+  return s;
+}
+function newScore(){const q=genScore(scoreLevel);scoreQ={...q,done:false,pick:null,...scoreOptions(q)};renderScore();}
+function renderScore(){
+  if(!scoreQ)return;const q=scoreQ;
+  const qt=q.tsumo?(q.dealer?T('scoreQAll'):T('scoreQTsumo')):T('scoreQ');
+  const badge=`<span class="sbadge">${T(q.dealer?'oya':'ko')}</span><span class="sbadge">${T(q.tsumo?'tsumo':'ron')}</span><span class="sbadge strong">${q.level==='limit'?T('hanOnly',{h:q.han}):T('hanfu',{h:q.han,f:q.fu})}</span>`;
+  $('#score-card').innerHTML=`<div class="sbadges">${badge}</div><p class="sq">${qt}</p><div class="opts one">${q.opts.map(o=>`<button class="opt ${q.done?(o===q.right?'right':o===q.pick?'wrong':''):''}" data-sopt="${encodeURIComponent(o)}" ${q.done?'disabled':''}>${o}</button>`).join('')}</div>`;
+  if(!q.done){$('#score-fb').innerHTML='';$('#score-next').hidden=true;}
+}
+$('#score-card').addEventListener('click',e=>{
+  const b=e.target.closest('[data-sopt]');if(!b||scoreQ.done)return;
+  const o=decodeURIComponent(b.dataset.sopt),ok=o===scoreQ.right;
+  scoreQ.done=true;scoreQ.pick=o;
+  stats.score.n++;if(ok)stats.score.ok++;saveStats();logEvent('s',ok?2:0,0);
+  renderScore();
+  $('#score-fb').innerHTML=react(ok,`<b>${scoreQ.right}</b><br>${scoreExplain(scoreQ)}`,'','score');
+  $('#score-next').hidden=false;
+});
+$('#score-next').addEventListener('click',newScore);
+$('#score-level').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;scoreLevel=b.dataset.lv;document.querySelectorAll('#score-level .chip').forEach(x=>x.setAttribute('aria-pressed',x===b));newScore();});
+
+// --- 理牌 ---
+let rp=null;
+function rpBest(){try{return +localStorage.getItem('jangaku-riipai-best')||0;}catch(e){return 0;}}
+function newRiipai(){
+  const wall=[];for(let i=0;i<34;i++)for(let k=0;k<4;k++)wall.push(i);shuffle(wall);
+  rp={left:wall.slice(0,13),placed:[],t0:null,miss:0,done:false,time:0,newBest:false,shake:-1};renderRiipai();
+}
+function renderRiipai(){
+  if(!rp)return;
+  const best=rpBest();
+  const placed=rp.placed.length?tilesRow(rp.placed):`<span class="note">—</span>`;
+  const left=rp.left.map((t,i)=>`<button class="pick ${i===rp.shake?'shake':''}" data-rp="${i}">${tileEl(t)}</button>`).join('');
+  let res='';
+  if(rp.done){
+    res=guide(rp.miss===0?'happy':'normal',`<b>${T('rpDone',{t:rp.time.toFixed(1),m:rp.miss})}</b>${rp.newBest?`<br>${T('rpNew')}`:''}`,rp.miss===0?'ok':'')+cameo('ron','normal',T('rpTip'))
+      +`<div class="row"><button class="btn" id="rp-again">${T('rpAgain')}</button></div>`;
+  }
+  $('#riipai-body').innerHTML=`<div class="block">
+    <div class="rphead"><span class="note">${T('rpMiss',{n:rp.miss})}</span><span class="note">${best?T('rpBest',{t:best.toFixed(1)}):''}</span></div>
+    <p class="note"><b>${T('rpSorted')}</b></p><div class="hand rpsorted">${placed}</div>
+    ${rp.done?'':`<p class="note"><b>${T('rpLeft')}</b></p><div class="hand rpleft">${left}</div>`}
+    ${res}</div>`;
+  rp.shake=-1;
+}
+$('#riipai-body').addEventListener('click',e=>{
+  if(e.target.closest('#rp-again')){newRiipai();return;}
+  const b=e.target.closest('[data-rp]');if(!b||rp.done)return;
+  const i=+b.dataset.rp,t=rp.left[i],min=Math.min(...rp.left);
+  if(rp.t0===null)rp.t0=performance.now();
+  if(t===min){rp.placed.push(t);rp.left.splice(i,1);}
+  else{rp.miss++;rp.shake=i;}
+  if(!rp.left.length){
+    rp.done=true;rp.time=(performance.now()-rp.t0)/1000;
+    const best=rpBest();if(rp.miss===0&&(!best||rp.time<best)){rp.newBest=true;try{localStorage.setItem('jangaku-riipai-best',String(rp.time));}catch(err){}}
+    logEvent('r',rp.miss===0?2:0,0);
+  }
+  renderRiipai();
+});
+
+// --- 鳴きの作法クイズ ---
+const MANNER=[
+ {ja:["ポンやチーをするときの正しい順番は？",["発声 → 牌を見せて並べる → 1枚切る","牌を見せて並べる → 発声 → 1枚切る","1枚切る → 発声 → 牌を見せて並べる"],"まずはっきり発声してから、手牌の牌を見せて鳴いた牌と並べ、最後に1枚切る。"],
+  en:["What's the right order when you call pon or chii?",["Call out → reveal and set the tiles → discard","Reveal and set the tiles → call out → discard","Discard → call out → reveal the tiles"],"Call out clearly first, then reveal your tiles and set them with the called tile, and discard last."],
+  es:["¿Cuál es el orden correcto al llamar pon o chii?",["Anunciar → mostrar y colocar las fichas → descartar","Mostrar y colocar las fichas → anunciar → descartar","Descartar → anunciar → mostrar las fichas"],"Primero anuncia claramente, luego muestra tus fichas y colócalas con la ficha llamada, y al final descarta."]},
+ {meld:true,ja:["この並べ方は、誰の捨て牌をポンした？",["左の人（上家）","正面の人（対面）","右の人（下家）"],"横向きの牌の位置が、鳴いた相手の方向を表す。左端なら上家、真ん中なら対面、右端なら下家。"],
+  en:["Whose discard was called for this pon?",["The player on your left","The player across","The player on your right"],"The sideways tile shows who you called from: left end for the player on your left, middle for across, right end for the player on your right."],
+  es:["¿De quién era el descarte de este pon?",["Del jugador de tu izquierda","Del jugador de enfrente","Del jugador de tu derecha"],"La ficha de lado indica de quién llamaste: a la izquierda, el jugador de tu izquierda; en el medio, el de enfrente; a la derecha, el de tu derecha."]},
+ {ja:["チーができるのは、誰の捨て牌？",["左の人（上家）だけ","正面の人（対面）だけ","誰の捨て牌でもできる"],"チーは上家の捨て牌だけ。ポンとカンは誰からでもできる。"],
+  en:["Whose discard can you chii?",["Only the player on your left","Only the player across","Anyone's"],"Chii only works on the left player's discard. Pon and kan work from anyone."],
+  es:["¿De quién puedes hacer chii?",["Solo del jugador de tu izquierda","Solo del jugador de enfrente","De cualquiera"],"El chii solo vale con el descarte del jugador de tu izquierda. Pon y kan, de cualquiera."]},
+ {ja:["1枚の捨て牌に「ロン」と「ポン」の声が同時にかかった。優先されるのは？",["ロン","ポン","先に声を出した人"],"優先順位はロン、次にポン・カン、最後にチー。"],
+  en:["Someone calls ron and someone else calls pon on the same discard at once. Which wins?",["Ron","Pon","Whoever spoke first"],"Priority is ron, then pon and kan, then chii."],
+  es:["Sobre el mismo descarte, alguien dice ron y otro pon a la vez. ¿Cuál gana?",["Ron","Pon","Quien habló primero"],"La prioridad es ron, luego pon y kan, y al final chii."]},
+ {ja:["鳴いた牌はどこに置く？",["自分の手牌の右側","自分の手牌の左側","自分の捨て牌の横"],"鳴いた面子は手牌の右側に、1枚を横向きにして並べる。"],
+  en:["Where do you place your called set?",["To the right of your hand","To the left of your hand","Next to your discards"],"Called sets go to the right of your hand, with one tile turned sideways."],
+  es:["¿Dónde colocas el grupo llamado?",["A la derecha de tu mano","A la izquierda de tu mano","Junto a tus descartes"],"Los grupos llamados van a la derecha de tu mano, con una ficha de lado."]},
+ {ja:["5萬をポンした直後に、手牌の5萬を切った。これは？",["喰い替えで、多くのルールで禁止","特に問題ない","ポンの代わりにチーになる"],"鳴いた牌と同じ牌をすぐ切る「喰い替え」は、多くのルールで禁止されている。"],
+  en:["You pon a 5-man, then immediately discard a 5-man from your hand. This is:",["Kuikae, banned under most rules","Perfectly fine","Turned into a chii instead"],"Discarding the same tile right after calling it (kuikae) is banned under most rules."],
+  es:["Haces pon de un 5-man y enseguida descartas un 5-man de tu mano. Esto es:",["Kuikae, prohibido en la mayoría de reglas","Totalmente válido","Se convierte en chii"],"Descartar la misma ficha justo después de llamarla (kuikae) está prohibido en la mayoría de reglas."]},
+ {ja:["ポンやチーをした後に、リーチはできる？",["できない","できる","1局に1回だけできる"],"リーチは鳴いていない手（門前）でしかかけられない。"],
+  en:["Can you declare riichi after calling pon or chii?",["No","Yes","Once per hand"],"Riichi is only allowed with a closed hand."],
+  es:["¿Puedes declarar riichi tras llamar pon o chii?",["No","Sí","Una vez por mano"],"El riichi solo se permite con la mano cerrada."]},
+ {ja:["ロンでアガったら、まずすることは？",["手牌を倒して見せ、点数を申告する","黙って点棒を受け取る","すぐに次の局の牌を混ぜる"],"アガったら手牌を倒して全員に見せ、自分で点数を申告する。点数計算の練習が役に立つ場面じゃ。"],
+  en:["You win by ron. What do you do first?",["Lay down your hand and announce your score","Quietly collect the points","Start shuffling for the next hand"],"Lay your hand down for everyone to see, then announce your own score. That's where scoring practice pays off."],
+  es:["Ganas por ron. ¿Qué haces primero?",["Mostrar la mano y anunciar tus puntos","Cobrar los puntos en silencio","Empezar a barajar la siguiente mano"],"Tumba tu mano para que todos la vean y anuncia tus puntos. Ahí es donde sirve practicar la puntuación."]},
+ {ja:["「ポン」と言ったあと、やっぱりやめたくなった。どうなる？",["ルールによっては罰則がある","何も問題ない","次の巡まで待てばよい"],"発声後の取り消しは、ルールによって罰則がある。迷ったら声を出す前に考えよう。"],
+  en:["You said 'pon' but changed your mind. What happens?",["Some rules give a penalty","Nothing at all","Just wait until your next turn"],"Taking back a call is penalized under some rules. If you're unsure, think before you speak."],
+  es:["Dijiste 'pon' pero te arrepientes. ¿Qué pasa?",["Algunas reglas lo penalizan","Nada","Basta con esperar al siguiente turno"],"Retirar una llamada se penaliza en algunas reglas. Si dudas, piensa antes de hablar."]},
+];
+let mq=null;
+function newManner(){
+  const order=shuffle(MANNER.map((_,i)=>i));
+  mq={order,i:0,score:0,answered:null,qs:order.map(i=>{const m=MANNER[i];const side=m.meld?rnd(3):null;const ans=m.meld?side:0;return {m,side,ans,perm:shuffle([0,1,2])};})};
+  renderManner();
+}
+function renderManner(){
+  if(!mq)return;
+  const n=mq.qs.length;
+  if(mq.i>=n){
+    const perfect=mq.score===n;
+    $('#manner-body').innerHTML=`<div class="block dres"><h3>${T('mResult',{s:mq.score,n})}</h3></div>`+guide(perfect?'happy':'think',perfect?T('mPerfect'):T('ronManner'),perfect?'ok':'')+`<div class="row"><button class="btn" id="m-again">${T('mAgain')}</button><button class="btn ghost" data-lesson="naki">${T('lessonLink',{t:(LESSONS[lessonIdx('naki')].title[LANG]||LESSONS[lessonIdx('naki')].title.en)[0]})}</button></div>`;
+    return;
+  }
+  const q=mq.qs[mq.i],L=q.m[LANG]||q.m.en,a=mq.answered;
+  const vis=q.m.meld?`<div class="meldq">${meldHTML('555p',q.side)}</div>`:'';
+  const opts=q.perm.map(k=>`<button class="opt ${a!==null?(k===q.ans?'right':k===a?'wrong':''):''}" data-mopt="${k}" ${a!==null?'disabled':''}>${L[1][k]}</button>`).join('');
+  let fb='';
+  if(a!==null)fb=`<div role="status">${guide(a===q.ans?'happy':'oops',`<b>${L[1][q.ans]}</b><br>${L[2]}`,a===q.ans?'ok':'ng')}</div><div class="row"><button class="btn" id="m-next">${T('next')}</button></div>`;
+  $('#manner-body').innerHTML=`<div class="block"><p class="note">${T('mQ',{i:mq.i+1,n})}</p><p class="sq">${L[0]}</p>${vis}<div class="opts one">${opts}</div>${fb}</div>`;
+}
+$('#manner-body').addEventListener('click',e=>{
+  if(e.target.closest('#m-again')){newManner();return;}
+  if(e.target.closest('#m-next')){mq.i++;mq.answered=null;renderManner();return;}
+  const b=e.target.closest('[data-mopt]');if(!b||mq.answered!==null)return;
+  mq.answered=+b.dataset.mopt;const q=mq.qs[mq.i],ok=mq.answered===q.ans;
+  if(ok)mq.score++;stats.manner.n++;if(ok)stats.manner.ok++;saveStats();logEvent('m',ok?2:0,0);
+  renderManner();
+});
+
+Object.assign(I18N.ja,{scoreLessonLink:"点数の仕組みを道場で学ぶ →",mannerLessonLink:"鳴きの所作を道場で学ぶ →"});
+Object.assign(I18N.en,{scoreLessonLink:"Learn how scoring works in the Dojo →",mannerLessonLink:"Learn calling etiquette in the Dojo →"});
+Object.assign(I18N.es,{scoreLessonLink:"Aprende cómo se puntúa en el Dojo →",mannerLessonLink:"Aprende la etiqueta al llamar en el Dojo →"});
+
+// ===== 言語切り替え =====
+function applyLang(first){
+  document.documentElement.lang=LANG;
+  document.title=T('docTitle');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=T(el.dataset.i18n);});
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{el.setAttribute('aria-label',T(el.dataset.i18nAria));});
+  document.querySelectorAll('#lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===LANG));
+  $('#brand-sub').hidden=!T('brandSub');
+  tipIdx=-1;
+  renderTiles();renderYaku();renderTrivia();renderDojo();renderWelcome();if(scoreQ)newScore();renderRiipai();renderManner();renderSubnav();if(curTab==="home")renderHome();if(daily&&!first)renderDaily();drawTrivia(!first);renderStats();
+  if(first)newName();else renderName();
+  if(waitQ)renderWait();
+  if(naniQ)renderNani();
+}
+$('#lang').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||b.dataset.lang===LANG)return;
+  LANG=b.dataset.lang;try{localStorage.setItem('jangaku-lang',LANG);}catch(e){}
+  applyLang(false);
+});
+
+// ===== 初期化 =====
+document.querySelectorAll('.guide[data-mood] .chun').forEach(el=>{el.innerHTML=chunSVG(el.closest('.guide').dataset.mood);});
+$('#hero-chun').innerHTML=chunSVG('normal');
+$('#hero-chun').addEventListener('click',()=>{
+  const tips=T('tips');tipIdx=(tipIdx+1)%tips.length;
+  const el=$('#hero-chun');el.innerHTML=chunSVG(['happy','think','normal'][tipIdx%3]);
+  el.classList.remove('hop');void el.offsetWidth;el.classList.add('hop');
+  $('#hero-say').textContent=tips[tipIdx];
+  const tbl=document.querySelector('.table');
+  if(tbl.classList.contains('compact')){tbl.classList.add('saying');clearTimeout(window._sayT);window._sayT=setTimeout(()=>tbl.classList.remove('saying'),6000);}
+});
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;showTab(b.dataset.tab);const pn=document.getElementById(curTab);if(pn)pn.focus({preventScroll:true});});
+$('#name-next').addEventListener('click',newName);
+applyLang(true);
+applyLevel();
+function setCompact(){document.querySelector('.table').classList.toggle('compact',!!userLevel);}
+setCompact();
+showTab(!userLevel?'welcome':'home');
+
+</script>
+</body>
+</html>

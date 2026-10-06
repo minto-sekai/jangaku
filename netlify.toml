@@ -1,0 +1,18 @@
+# Netlifyの設定。HTMLは毎回最新版を読み込み、画像は1日キャッシュする
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
